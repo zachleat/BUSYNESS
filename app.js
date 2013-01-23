@@ -2,16 +2,9 @@ var express = require( 'express' ),
 	http = require( 'http' ),
 	path = require( 'path' ),
 	routes = require('./routes'),
-	twitterConfig = require('./twitter_config.json');
+	twitterConfig = require('./twitter_config.json'),
+	config = require('./config.json');
 
-var config = {
-	port: 3000,
-	domain: "http://localhost:3000",
-	login: "/twitter/sessions/connect",
-	logout: "/twitter/sessions/logout",
-	loginCallback: "/twitter/sessions/callback", /* internal */
-	completeCallback: "/u/zachleat"
-};
 config.consumerKey = twitterConfig.consumerKey;
 config.consumerSecret = twitterConfig.consumerSecret;
 
@@ -34,43 +27,49 @@ app.configure(function(){
 	app.use(express.static(path.join(__dirname, 'public' )));
 });
 
-// app.use(express.cookieParser());
-// app.use(express.session());
-// app.use(express.bodyParser());
-
 app.configure( 'development', function() {
   app.use( express.errorHandler() );
 });
 
-app.get( '/', routes.index );
-
 var Silencer = {
+	MAX_CAP: 1000,
+	TRUNCATE_TOP: 100,
+	TRUNCATE_BOTTOM: 100,
 	lookupUrl: 'https://api.twitter.com/1.1/users/lookup.json',
 	convertTwitterUser: function( user ) {
+		var birth = new Date(user.created_at),
+			ageInDays = ( ( new Date() - birth ) / ( 1000*60*60*24 ) ).toFixed( 2 );
+
 		return {
 			username: user.screen_name,
 			name: user.name,
 			friends: user.friends_count,
-			statuses: user.statuses_count,
+			tweets: user.statuses_count,
 			followers: user.followers_count,
-			birth: user.created_at,
 			listed: user.listed_count,
 			favorites: user.favourites_count,
 			description: user.description,
-			avatar: user.profile_image_url
+			avatar: user.profile_image_url,
+			ageInDays: ageInDays,
+			tweetsPerDay: ( user.statuses_count / ageInDays ).toFixed( 2 )
 		};
 	}
 };
 
-app.get( '/u/:username', twitterAuth.middleware, function( req, res ){
-	var token = req.session.oauthAccessToken,
-		secret = req.session.oauthAccessTokenSecret;
+app.get( '/', routes.index );
 
-	twitterAuth.fetch( 'https://api.twitter.com/1.1/friends/ids.json?screen_name=' + req.params.username, token, secret, function( error, data ) {
-		var ids = data.ids,
+app.get( '/u/:username', twitterAuth.middleware, function( req, res ) {
+
+	var token = req.session.oauthAccessToken,
+		secret = req.session.oauthAccessTokenSecret,
+		username = req.params.username;
+
+	twitterAuth.fetch( 'https://api.twitter.com/1.1/friends/ids.json?screen_name=' + username, token, secret, function( error, data ) {
+		var ids = data.ids.slice( 0, Silencer.MAX_CAP ),
 			users = [],
-			requestsMade = Math.ceil( ids.length / 100 ) + 1,
-			requestsCompleted = 0;
+			requestsMade = Math.ceil( ids.length / 100 ), // + 1, if include the other service call below
+			requestsCompleted = 0,
+			totalTweetsPerDay = 0;
 
 		function lookupCallback( error, lookupData ) {
 			if( error ) {
@@ -79,20 +78,35 @@ app.get( '/u/:username', twitterAuth.middleware, function( req, res ){
 
 			requestsCompleted++;
 			if( !error && lookupData ) {
-				lookupData.forEach(function(user) {
-					users.push( Silencer.convertTwitterUser( user ) );
+				lookupData.forEach(function( user ) {
+					var converted = Silencer.convertTwitterUser( user );
+					totalTweetsPerDay += +converted.tweetsPerDay;
+
+					users.push( converted );
 				});
 			}
 
 			if( requestsCompleted == requestsMade ) {
-				res.json({
-					error: error,
-					data: users
+				// sort users by tweets per day desc
+				users = users.sort(function(a, b) {
+					return b.tweetsPerDay - a.tweetsPerDay;
+				});
+
+				res.render('user', {
+					title: 'Twitter Silencer',
+					logout: config.logout,
+					username: username,
+					total: Math.round( totalTweetsPerDay ),
+					friends: users.length, // - 1, if include the other service call below.
+					users: users,
+					maxCap: Silencer.MAX_CAP,
+					truncateTopLength: Silencer.TRUNCATE_TOP,
+					truncateBottomLength: Silencer.TRUNCATE_BOTTOM
 				});
 			}
 		}
 
-		twitterAuth.fetch( Silencer.lookupUrl + '?screen_name=' + req.params.username, token, secret, lookupCallback );
+		//twitterAuth.fetch( Silencer.lookupUrl + '?screen_name=' + req.params.username, token, secret, lookupCallback );
 
 		for( var j = 0, k = ids.length; j<k; j+= 100 ) {
 			twitterAuth.fetch( Silencer.lookupUrl + '?user_id=' + ids.slice(j, j + 100), token, secret, lookupCallback );

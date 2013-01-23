@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title><%= title %></title>
+	<link rel='stylesheet' href='/stylesheets/style.css'>
+</head>
+<body>
+	<h1><%= title %></h1>
+	<p><a href="<%= logout %>">Log out</a></p>
+
+	<h2><a href="https://twitter.com/<%= username %>"><%= username %></a> consumes
+		<%= users.length === maxCap ? ' at least ' : '' %><strong><%= total %> Tweet<%= total !== 1 ? 's' : '' %></strong> per day (<%= Math.round( total / 24 ) %> per hour)
+		from <%= friends %> friend<%= friends !== 1 ? 's' : '' %>
+		<%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %>
+	</h2>
+	<table>
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Name</th>
+				<th class="tertiary inline-labels">Friends<br/>Followers</th>
+				<th>Tweets</th>
+				<th class="tertiary">Listed</th>
+				<th class="tertiary">Favorites</th>
+				<th class="secondary">Account Age (Years)</th>
+				<th>Average Tweets per Day</th>
+			</tr>
+		</thead>
+		<tbody>
+<% for(var j=0, k=users.length; j<k; j++) { %>
+	<% if(j >= truncateTopLength && j < ( k - truncateBottomLength ) ) { continue; } %>
+			<tr>
+				<td><%= (j+1) %>.</td>
+				<td class="screenname"><a href="https://twitter.com/<%= users[j].username %>"><img src="<%= users[j].avatar %>"><%= users[j].username %></a></td>
+				<td class="tertiary">
+					<div><%= users[j].friends %><label> friends</label></div>
+					<div><%= users[j].followers %><label> followers</label></div>
+				</td>
+				<td><%= users[j].tweets %></td>
+				<td class="tertiary"><%= users[j].listed %></td>
+				<td class="tertiary"><%= users[j].favorites %></td>
+				<td class="secondary"><%= ( users[j].ageInDays / 365 ).toFixed( 2 ) %></td>
+				<td><%= users[j].tweetsPerDay %> <label>per day</label></td>
+			</tr>
+<% } %>
+		</tbody>
+	</table>
+	<em>Includes all @-replies, which is an overestimation. Twitter only shows you @-replies when you follow the user the reply is to.</em>
+</body>
+</html>

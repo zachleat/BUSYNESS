@@ -1,8 +1,59 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+	font-family: Verdana, sans-serif;
+	font-size: 75%;
+}
+img {
+	max-width: 4em;
+	margin-right: 1em;
+	border: none;
+	vertical-align: middle;
+}
+table {
+	width: 100%;
+	border-spacing: 0;
+}
+th,
+td {
+	padding: 0 .5em;
+	margin: 0;
+}
+th:first-child,
+td:first-child {
+	max-width: 50px;
+}
+th:last-child,
+td:last-child {
+	font-weight: bold;
+}
+tbody tr:nth-child(2n+1) {
+	background-color: #eee;
 }
 
-a {
-  color: #00B7FF;
+.secondary,
+.tertiary,
+th label,
+td label {
+	display: none;
+}
+
+@media (min-width: 30em) {
+	.secondary {
+		display: table-cell;
+	}
+}
+@media (min-width: 40em) {
+	th label,
+	td label {
+		display: inline;
+	}
+	.inline-labels {
+		visibility: hidden;
+	}
+	.tertiary {
+		display: table-cell;
+	}
+}
+
+.screenname {
+	white-space: nowrap;
 }

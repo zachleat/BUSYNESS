@@ -1,0 +1,8 @@
+{
+	"port": 3000,
+	"domain": "http://localhost:3000",
+	"login": "/twitter/sessions/connect",
+	"logout": "/twitter/sessions/logout",
+	"loginCallback": "/twitter/sessions/callback",
+	"completeCallback": "/u/zachleat"
+}
