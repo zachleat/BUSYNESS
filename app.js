@@ -2,13 +2,19 @@ var express = require( 'express' ),
 	http = require( 'http' ),
 	path = require( 'path' ),
 	routes = require('./routes'),
-	twitterConfig = require('./twitter_config.json'),
 	config = require('./config.json');
 
 config.port = process.env.PORT || config.defaultPort;
 config.domain = config.defaultDomain + ':' + config.port;
-config.consumerKey = twitterConfig.consumerKey;
-config.consumerSecret = twitterConfig.consumerSecret;
+
+if( process.env.consumerKey && process.env.consumerSecret ) {
+	config.consumerKey = process.env.consumerKey;
+	config.consumerSecret = process.env.consumerSecret;
+} else {
+	var twitterConfig = require('./twitter_config.json');
+	config.consumerKey = twitterConfig.consumerKey;
+	config.consumerSecret = twitterConfig.consumerSecret;
+}
 
 var twitterAuth = require( 'twitter-oauth' )( config );
 
