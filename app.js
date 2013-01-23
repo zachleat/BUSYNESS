@@ -5,6 +5,8 @@ var express = require( 'express' ),
 	twitterConfig = require('./twitter_config.json'),
 	config = require('./config.json');
 
+config.port = process.env.PORT || config.defaultPort;
+config.domain = config.defaultDomain + ':' + config.port;
 config.consumerKey = twitterConfig.consumerKey;
 config.consumerSecret = twitterConfig.consumerSecret;
 

@@ -1,6 +1,6 @@
 {
-	"port": 3000,
-	"domain": "http://localhost:3000",
+	"defaultPort": 3000,
+	"defaultDomain": "http://twitter-silencer.herokuapp.com",
 	"login": "/twitter/sessions/connect",
 	"logout": "/twitter/sessions/logout",
 	"loginCallback": "/twitter/sessions/callback",
