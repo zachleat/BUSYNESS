@@ -11,8 +11,9 @@
   },
 	"dependencies": {
 		"express": "3.0.6",
-		"ejs": "*",
-		"oauth": "*",
-		"twitter-oauth": "*"
+		"ejs": "0.8.3",
+		"oauth": "0.9.8",
+		"twitter-oauth": "0.0.5",
+		"request": "2.12.0"
 	}
 }
