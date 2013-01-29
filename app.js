@@ -85,7 +85,17 @@ app.get( '/u/:username', function( req, res ) {
 		secret = req.session.oauthAccessTokenSecret,
 		username = req.params.username;
 
+	if( !token || !secret || !username ) {
+		res.redirect( '/' );
+		return;
+	}
+
 	twitterAuth.fetch( 'https://api.twitter.com/1.1/friends/ids.json?screen_name=' + username, token, secret, function( error, data ) {
+		if( !data || !data.ids ) {
+			res.redirect( '/' );
+			return;
+		}
+
 		var ids = data.ids.slice( 0, Silencer.MAX_CAP ),
 			users = [],
 			requestsMade = Math.ceil( ids.length / 100 ), // + 1, if include the other service call below
