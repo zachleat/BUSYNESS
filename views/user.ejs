@@ -24,9 +24,9 @@
 				<th>#</th>
 				<th>Name</th>
 				<th class="tertiary inline-labels">Friends<br/>Followers</th>
-				<th>Tweets</th>
 				<th class="tertiary">Listed</th>
 				<th class="secondary">Account Age (Years)</th>
+				<th>Tweets</th>
 				<th>Average Tweets per Day</th>
 			</tr>
 		</thead>
@@ -44,9 +44,9 @@
 					<div><%= users[j].friends %><label> friends</label></div>
 					<div><%= users[j].followers %><label> followers</label></div>
 				</td>
-				<td><%= users[j].tweets %></td>
 				<td class="tertiary"><%= users[j].listed %></td>
 				<td class="secondary"><%= ( users[j].ageInDays / 365 ).toFixed( 2 ) %></td>
+				<td><%= users[j].tweets %></td>
 				<td><%= users[j].tweetsPerDay %> <label>per day</label></td>
 			</tr>
 <% } %>
