@@ -90,7 +90,9 @@ app.get( '/u/:username', function( req, res ) {
 			users = [],
 			requestsMade = Math.ceil( ids.length / 100 ), // + 1, if include the other service call below
 			requestsCompleted = 0,
-			totalTweetsPerDay = 0;
+			totalTweetsPerDay = 0,
+			mean,
+			median;
 
 		function lookupCallback( error, lookupData ) {
 			if( error ) {
@@ -113,6 +115,9 @@ app.get( '/u/:username', function( req, res ) {
 					return b.tweetsPerDay - a.tweetsPerDay;
 				});
 
+				median = users[ Math.floor( users.length / 2 ) ].tweetsPerDay;
+				mean = ( totalTweetsPerDay / users.length ).toFixed( 2 );
+
 				res.render('user', {
 					title: 'Twitter Silencer',
 					logout: config.logout,
@@ -122,7 +127,9 @@ app.get( '/u/:username', function( req, res ) {
 					users: users,
 					maxCap: Silencer.MAX_CAP,
 					truncateTopLength: Silencer.TRUNCATE_TOP,
-					truncateBottomLength: Silencer.TRUNCATE_BOTTOM
+					truncateBottomLength: Silencer.TRUNCATE_BOTTOM,
+					mean: mean,
+					median: median
 				});
 			}
 		}

@@ -14,6 +14,10 @@
 		from <%= friends %> friend<%= friends !== 1 ? 's' : '' %>
 		<%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %>
 	</h2>
+	<ul>
+		<li>Mean: <%= mean %></li>
+		<li>Median: <%= median %></li>
+	</ul>
 	<table>
 		<thead>
 			<tr>
