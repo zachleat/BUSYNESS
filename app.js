@@ -129,7 +129,8 @@ app.get( '/u/:username', function( req, res ) {
 					truncateTopLength: Silencer.TRUNCATE_TOP,
 					truncateBottomLength: Silencer.TRUNCATE_BOTTOM,
 					mean: mean,
-					median: median
+					median: median,
+					ellipsisShown: false
 				});
 			}
 		}

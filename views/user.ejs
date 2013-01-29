@@ -32,7 +32,11 @@
 		</thead>
 		<tbody>
 <% for(var j=0, k=users.length; j<k; j++) { %>
-			<% if(j >= truncateTopLength && j < ( k - truncateBottomLength - 1 ) ) { continue; } %>
+	<% if(j >= truncateTopLength && j < ( k - truncateBottomLength - 1 ) ) { %>
+		<% if( !ellipsisShown ) { %>
+			<tr class="truncated"><td colspan="7"><em>Results truncated</em></td></tr>
+		<% ellipsisShown = true; } %>
+	<% continue; } %>
 			<tr>
 				<td><%= (j+1) %>.</td>
 				<td class="screenname"><a href="https://twitter.com/<%= users[j].username %>"><img src="<%= users[j].avatar %>"><%= users[j].username %></a></td>
