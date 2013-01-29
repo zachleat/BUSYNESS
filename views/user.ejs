@@ -26,14 +26,13 @@
 				<th class="tertiary inline-labels">Friends<br/>Followers</th>
 				<th>Tweets</th>
 				<th class="tertiary">Listed</th>
-				<th class="tertiary">Favorites</th>
 				<th class="secondary">Account Age (Years)</th>
 				<th>Average Tweets per Day</th>
 			</tr>
 		</thead>
 		<tbody>
 <% for(var j=0, k=users.length; j<k; j++) { %>
-	<% if(j >= truncateTopLength && j < ( k - truncateBottomLength ) ) { continue; } %>
+			<% if(j >= truncateTopLength && j < ( k - truncateBottomLength - 1 ) ) { continue; } %>
 			<tr>
 				<td><%= (j+1) %>.</td>
 				<td class="screenname"><a href="https://twitter.com/<%= users[j].username %>"><img src="<%= users[j].avatar %>"><%= users[j].username %></a></td>
@@ -43,7 +42,6 @@
 				</td>
 				<td><%= users[j].tweets %></td>
 				<td class="tertiary"><%= users[j].listed %></td>
-				<td class="tertiary"><%= users[j].favorites %></td>
 				<td class="secondary"><%= ( users[j].ageInDays / 365 ).toFixed( 2 ) %></td>
 				<td><%= users[j].tweetsPerDay %> <label>per day</label></td>
 			</tr>
