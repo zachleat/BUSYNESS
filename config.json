@@ -1,8 +1,8 @@
 {
 	"defaultPort": 3000,
-	"defaultDomain": "http://twitter-silencer.herokuapp.com",
+	"productionDomain": "http://twitter-silencer.herokuapp.com",
+	"developmentDomain": "http://localhost",
 	"login": "/twitter/sessions/connect",
 	"logout": "/twitter/sessions/logout",
-	"loginCallback": "/twitter/sessions/callback",
-	"completeCallback": "/u/zachleat"
+	"loginCallback": "/twitter/sessions/callback"
 }

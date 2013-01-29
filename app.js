@@ -2,14 +2,19 @@ var express = require( 'express' ),
 	http = require( 'http' ),
 	path = require( 'path' ),
 	routes = require('./routes'),
-	config = require('./config.json');
+	config = require('./config.json'),
+	IS_PRODUCTION = process.env.NODE_ENV == 'production';
 
 config.port = process.env.PORT || config.defaultPort;
 
-if( process.env.PORT ) {
-	config.domain = config.defaultDomain;
+if( IS_PRODUCTION ) {
+	if( process.env.PORT ) {
+		config.domain = config.productionDomain;
+	} else {
+		config.domain = config.productionDomain + ':' + config.port;
+	}
 } else {
-	config.domain = config.defaultDomain + ':' + config.port;
+	config.domain = config.developmentDomain + ':' + config.port;
 }
 
 if( process.env.consumerKey && process.env.consumerSecret ) {
@@ -21,12 +26,15 @@ if( process.env.consumerKey && process.env.consumerSecret ) {
 	config.consumerSecret = twitterConfig.consumerSecret;
 }
 
-var twitterAuth = require( 'twitter-oauth' )( config );
+config.oauthCallbackCallback = function(req, res, next, screen_name) {
+	res.redirect( '/u/' + screen_name );
+};
 
-var app = express();
+var twitterAuth = require( 'twitter-oauth' )( config ),
+	app = express();
 
 app.configure(function(){
-	app.set( 'port', config.port);
+	app.set( 'port', config.port );
 	app.set( 'views', __dirname + '/views' );
 	app.set( 'view engine', 'ejs' );
 	app.use(express.favicon());
@@ -46,8 +54,8 @@ app.configure( 'development', function() {
 
 var Silencer = {
 	MAX_CAP: 1000,
-	TRUNCATE_TOP: 100,
-	TRUNCATE_BOTTOM: 100,
+	TRUNCATE_TOP: 20,
+	TRUNCATE_BOTTOM: 20,
 	lookupUrl: 'https://api.twitter.com/1.1/users/lookup.json',
 	convertTwitterUser: function( user ) {
 		var birth = new Date(user.created_at),
@@ -71,7 +79,7 @@ var Silencer = {
 
 app.get( '/', routes.index );
 
-app.get( '/u/:username', twitterAuth.middleware, function( req, res ) {
+app.get( '/u/:username', function( req, res ) {
 
 	var token = req.session.oauthAccessToken,
 		secret = req.session.oauthAccessTokenSecret,
