@@ -9,10 +9,11 @@
 	<h1><%= title %></h1>
 	<p><a href="<%= logout %>">Log out</a></p>
 
-	<h2><a href="https://twitter.com/<%= username %>"><%= username %></a> consumes
+	<h2><a href="https://twitter.com/<%= originUser.username %>"><img src="<%= originUser.avatar %>"><%= originUser.username %></a> consumes
 		<%= users.length === maxCap ? ' at least ' : '' %><strong><%= total %> Tweet<%= total !== 1 ? 's' : '' %></strong> per day (<%= Math.round( total / 24 ) %> per hour)
 		from <%= friends %> friend<%= friends !== 1 ? 's' : '' %>
 		<%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %>
+		and publishes <%= originUser.tweetsPerDay %> Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day.
 	</h2>
 	<ul>
 		<li>Mean: <%= mean %></li>

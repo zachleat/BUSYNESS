@@ -1,7 +1,6 @@
 var express = require( 'express' ),
 	http = require( 'http' ),
 	path = require( 'path' ),
-	routes = require('./routes'),
 	config = require('./config.json'),
 	IS_PRODUCTION = process.env.NODE_ENV == 'production';
 
@@ -27,7 +26,7 @@ if( process.env.consumerKey && process.env.consumerSecret ) {
 }
 
 config.oauthCallbackCallback = function(req, res, next, screen_name) {
-	res.redirect( '/u/' + screen_name );
+	res.redirect( '/' + screen_name );
 };
 
 var twitterAuth = require( 'twitter-oauth' )( config ),
@@ -54,8 +53,9 @@ app.configure( 'development', function() {
 
 var Silencer = {
 	MAX_CAP: 1000,
-	TRUNCATE_TOP: 20,
-	TRUNCATE_BOTTOM: 20,
+	TRUNCATE_PERCENTAGE: 0.05,
+	MIN_TRUNCATE_TOP: 20,
+	MIN_TRUNCATE_BOTTOM: 20,
 	lookupUrl: 'https://api.twitter.com/1.1/users/lookup.json',
 	convertTwitterUser: function( user ) {
 		var birth = new Date(user.created_at),
@@ -74,52 +74,46 @@ var Silencer = {
 			ageInDays: ageInDays,
 			tweetsPerDay: ( user.statuses_count / ageInDays ).toFixed( 2 )
 		};
-	}
-};
+	},
+	middleware: function( req, res, callback ) {
+		var token = req.session.oauthAccessToken,
+			secret = req.session.oauthAccessTokenSecret,
+			username = req.params.username;
 
-app.get( '/', routes.index );
-
-app.get( '/u/:username', function( req, res ) {
-
-	var token = req.session.oauthAccessToken,
-		secret = req.session.oauthAccessTokenSecret,
-		username = req.params.username;
-
-	if( !token || !secret || !username ) {
-		res.redirect( '/' );
-		return;
-	}
-
-	twitterAuth.fetch( 'https://api.twitter.com/1.1/friends/ids.json?screen_name=' + username, token, secret, function( error, data ) {
-		if( !data || !data.ids ) {
+		if( !token || !secret || !username ) {
 			res.redirect( '/' );
 			return;
 		}
 
-		var ids = data.ids.slice( 0, Silencer.MAX_CAP ),
-			users = [],
-			requestsMade = Math.ceil( ids.length / 100 ), // + 1, if include the other service call below
-			requestsCompleted = 0,
-			totalTweetsPerDay = 0,
-			mean,
-			median;
+		callback( token, secret, username );
+	}
+};
 
-		function lookupCallback( error, lookupData ) {
-			if( error ) {
-				console.log( error );
+app.get( '/', function( req, res ) {
+	res.render('index', {
+		title: 'Twitter Silencer',
+		login: config.login
+	});
+});
+
+app.get( '/:username', function( req, res ) {
+	Silencer.middleware( req, res, function( token, secret, username ) {
+		twitterAuth.fetch( 'https://api.twitter.com/1.1/friends/ids.json?screen_name=' + username, token, secret, function( error, data ) {
+			if( !data || !data.ids ) {
+				res.redirect( '/' );
+				return;
 			}
 
-			requestsCompleted++;
-			if( !error && lookupData ) {
-				lookupData.forEach(function( user ) {
-					var converted = Silencer.convertTwitterUser( user );
-					totalTweetsPerDay += +converted.tweetsPerDay;
+			var ids = data.ids.slice( 0, Silencer.MAX_CAP ),
+				originUser,
+				users = [],
+				requestsMade = Math.ceil( ids.length / 100 ) + 1,
+				requestsCompleted = 0,
+				totalTweetsPerDay = 0,
+				mean,
+				median;
 
-					users.push( converted );
-				});
-			}
-
-			if( requestsCompleted == requestsMade ) {
+			function finishedCallback() {
 				// sort users by tweets per day desc
 				users = users.sort(function(a, b) {
 					return b.tweetsPerDay - a.tweetsPerDay;
@@ -128,28 +122,60 @@ app.get( '/u/:username', function( req, res ) {
 				median = users[ Math.floor( users.length / 2 ) ].tweetsPerDay;
 				mean = ( totalTweetsPerDay / users.length ).toFixed( 2 );
 
-				res.render('user', {
+				var truncatePercentage = Math.floor( users.length * Silencer.TRUNCATE_PERCENTAGE );
+				res.render('friends', {
 					title: 'Twitter Silencer',
 					logout: config.logout,
-					username: username,
+					originUser: originUser,
 					total: Math.round( totalTweetsPerDay ),
-					friends: users.length, // - 1, if include the other service call below.
+					friends: users.length,
 					users: users,
 					maxCap: Silencer.MAX_CAP,
-					truncateTopLength: Silencer.TRUNCATE_TOP,
-					truncateBottomLength: Silencer.TRUNCATE_BOTTOM,
+					truncateTopLength: Math.max( truncatePercentage, Silencer.MIN_TRUNCATE_TOP ),
+					truncateBottomLength: Math.max( truncatePercentage, Silencer.MIN_TRUNCATE_BOTTOM ),
 					mean: mean,
 					median: median,
 					ellipsisShown: false
 				});
 			}
-		}
 
-		//twitterAuth.fetch( Silencer.lookupUrl + '?screen_name=' + req.params.username, token, secret, lookupCallback );
+			twitterAuth.fetch( Silencer.lookupUrl + '?screen_name=' + username, token, secret, function( error, data ) {
+				if( error ) {
+					console.log( error );
+				}
 
-		for( var j = 0, k = ids.length; j<k; j+= 100 ) {
-			twitterAuth.fetch( Silencer.lookupUrl + '?user_id=' + ids.slice(j, j + 100), token, secret, lookupCallback );
-		}
+				requestsCompleted++;
+				if( !error && data && data.length ) {
+					originUser = Silencer.convertTwitterUser( data[ 0 ] );
+				}
+
+				if( requestsCompleted == requestsMade ) {
+					finishedCallback();
+				}
+			});
+
+			for( var j = 0, k = ids.length; j<k; j+= 100 ) {
+				twitterAuth.fetch( Silencer.lookupUrl + '?user_id=' + ids.slice(j, j + 100), token, secret, function( error, lookupData ) {
+					if( error ) {
+						console.log( error );
+					}
+
+					requestsCompleted++;
+					if( !error && lookupData ) {
+						lookupData.forEach(function( user ) {
+							var converted = Silencer.convertTwitterUser( user );
+							totalTweetsPerDay += +converted.tweetsPerDay;
+
+							users.push( converted );
+						});
+					}
+
+					if( requestsCompleted == requestsMade ) {
+						finishedCallback();
+					}
+				});
+			}
+		});
 	});
 });
 
