@@ -14,6 +14,7 @@
 		"ejs": "0.8.3",
 		"oauth": "0.9.8",
 		"twitter-oauth": "0.0.5",
-		"request": "2.12.0"
+		"request": "2.12.0",
+		"rsvp": "1.2.0"
 	}
 }

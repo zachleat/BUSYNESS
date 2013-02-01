@@ -11,7 +11,7 @@
 
 	<h2><a href="https://twitter.com/<%= originUser.username %>"><img src="<%= originUser.avatar %>"><%= originUser.username %></a> consumes
 		<%= users.length === maxCap ? ' at least ' : '' %><strong><%= total %> Tweet<%= total !== 1 ? 's' : '' %></strong> per day (<%= Math.round( total / 24 ) %> per hour)
-		from <%= friends %> friend<%= friends !== 1 ? 's' : '' %>
+		from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %>
 		<%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %>
 		and publishes <%= originUser.tweetsPerDay %> Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day.
 	</h2>
