@@ -178,6 +178,7 @@ app.get( '/:username', function( req, res ) {
 				truncateBottomLength: Math.max( truncatePercentage, Silencer.MIN_TRUNCATE_BOTTOM ),
 				mean: mean,
 				median: median,
+				max: users[ 0 ].tweetsPerDay,
 				ellipsisShown: false
 			});
 		}, errorCallback );
