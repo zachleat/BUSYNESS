@@ -4,21 +4,47 @@
 	<meta charset="utf-8">
 	<title><%= title %></title>
 	<link rel='stylesheet' href='/stylesheets/style.css'>
+	<script>
+	// Typekit Async Load
+	(function() {
+		var config = {
+			kitId: 'dpw1zla',
+			scriptTimeout: 3000
+		};
+		var h=document.getElementsByTagName("html")[0];h.className+=" wf-loading";var t=setTimeout(function(){h.className=h.className.replace(/(\s|^)wf-loading(\s|$)/g," ");h.className+=" wf-inactive"},config.scriptTimeout);var tk=document.createElement("script"),d=false;tk.src='//use.typekit.net/'+config.kitId+'.js';tk.type="text/javascript";tk.async="true";tk.onload=tk.onreadystatechange=function(){var a=this.readyState;if(d||a&&a!="complete"&&a!="loaded")return;d=true;clearTimeout(t);try{Typekit.load(config)}catch(b){}};var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(tk,s)
+	})();
+	</script>
 </head>
 <body>
-	<h1><%= title %></h1>
-	<p><a href="<%= logout %>">Log out</a></p>
 
-	<h2><a href="https://twitter.com/<%= originUser.username %>"><img src="<%= originUser.avatar %>"><%= originUser.username %></a> consumes
-		<%= users.length === maxCap ? ' at least ' : '' %><strong><%= total %> Tweet<%= total !== 1 ? 's' : '' %></strong> per day (<%= Math.round( total / 24 ) %> per hour)
-		from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %>
-		<%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %>
-		and publishes <%= originUser.tweetsPerDay %> Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day.
-	</h2>
-	<ul>
-		<li>Mean: <%= mean %></li>
-		<li>Median: <%= median %></li>
-	</ul>
+<div class="loudness-<%= Math.round(mean) %>">
+	<header>
+		<div class="row collapse">
+			<div class="large-10 small-11 columns">
+				<h1><a href="https://twitter.com/<%= originUser.username %>"><img src="<%= originUser.avatar %>" class="avatar"><%= originUser.username %><span class="secondary">'s </span></a><span class="tertiary">twitter </span><span class="secondary">silencer</span></h1>
+			</div>
+			<div class="large-1 small-1 columns">
+				<p class="text-right logout"><a href="<%= logout %>"><i class="ss-icon ss-standard large">logout</i></a></p>
+			</div>
+		</div>
+	</header>
+
+	<div class="row">
+		<div class="large-12 columns">
+				<h2><a href="https://twitter.com/<%= originUser.username %>"><%= originUser.username %></a> consumes
+					<%= users.length === maxCap ? ' at least ' : '' %><strong><%= total %> Tweet<%= total !== 1 ? 's' : '' %></strong> per day (<%= Math.round( total / 24 ) %> per hour)
+					from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %>
+					<%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %>
+					and publishes <%= originUser.tweetsPerDay %> Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day.
+				</h2>
+				<ul>
+					<li>Mean: <%= mean %></li>
+					<li>Median: <%= median %></li>
+				</ul>
+		</div>
+	</div>
+</div>
+
 	<table>
 		<thead>
 			<tr>
@@ -32,26 +58,45 @@
 			</tr>
 		</thead>
 		<tbody>
-<% for(var j=0, k=users.length; j<k; j++) { %>
-	<% if(j >= truncateTopLength && j < ( k - truncateBottomLength - 1 ) ) { %>
-		<% if( !ellipsisShown ) { %>
-			<tr class="truncated"><td colspan="7"><em>Results truncated</em></td></tr>
-		<% ellipsisShown = true; } %>
-	<% continue; } %>
-	<% var percentage = Math.round( users[ j ].tweetsPerDay * 100 / max ); %>
-			<tr>
-				<td><%= (j+1) %>.</td>
-				<td class="screenname"><a href="https://twitter.com/<%= users[j].username %>"><img src="<%= users[j].avatar %>"><%= users[j].username %></a></td>
+			<% for(var j=0, k=users.length; j<k; j++) { %>
+			<% if(j >= truncateTopLength && j < ( k - truncateBottomLength - 1 ) ) { %>
+			<% if( !ellipsisShown ) { %>
+			<tr class="truncated"><td colspan="7">
+				<i class="ss-icon ss-standard large">ellipsis</i>
+			</td></tr>
+			<% ellipsisShown = true; } %>
+			<% continue; } %>
+			<tr class="loudness-<%= Math.round( users[j].tweetsPerDay ) %>">
+				<td class="rank"><%= (j+1) %></td>
+				<td class="screenname"><a href="https://twitter.com/<%= users[j].username %>"><img src="<%= users[j].avatar %>" class="avatar"><span class="secondary"><%= users[j].username %></span></a></td>
 				<td class="tertiary">
+					<a href="https://twitter.com/<%= users[j].username %>">
 					<div><%= users[j].friends %><label> friends</label></div>
 					<div><%= users[j].followers %><label> followers</label></div>
+					</a>
 				</td>
-				<td class="tertiary"><%= users[j].listed %></td>
-				<td class="secondary"><%= ( users[j].ageInDays / 365 ).toFixed( 2 ) %></td>
-				<td><%= users[j].tweets %></td>
-				<td style="background: -webkit-linear-gradient(left, #ddd 0%, #ddd <%= percentage %>%, transparent <%= percentage %>%, transparent 100%); background: linear-gradient(to right, #ddd 0%, #ddd <%= percentage %>%, transparent <%= percentage %>%, transparent 100%);"><%= users[j].tweetsPerDay %> <label>per day</label></td>
+				<td class="tertiary">
+					<a href="https://twitter.com/<%= users[j].username %>">
+						<%= users[j].listed %>
+					</a>
+				</td>
+				<td class="secondary">
+					<a href="https://twitter.com/<%= users[j].username %>">
+						<%= ( users[j].ageInDays / 365 ).toFixed( 2 ) %>
+					</a>
+				</td>
+				<td>
+					<a href="https://twitter.com/<%= users[j].username %>">
+						<%= users[j].tweets %>
+					</a>
+				</td>
+				<td>
+					<a href="https://twitter.com/<%= users[j].username %>">
+						<%= users[j].tweetsPerDay %> <label>per day</label>
+					</a>
+				</td>
 			</tr>
-<% } %>
+			<% } %>
 		</tbody>
 	</table>
 	<em>Includes all @-replies, which is an overestimation. Twitter only shows you @-replies when you follow the user the reply is to.</em>
