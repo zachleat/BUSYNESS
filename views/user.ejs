@@ -17,7 +17,7 @@
 </head>
 <body>
 
-<div class="loudness-<%= Math.round(mean) %>">
+<div class="loudness-<%= Math.round(mean) %> user-info">
 	<header>
 		<div class="row collapse">
 			<div class="large-10 small-11 columns">
@@ -31,7 +31,7 @@
 
 	<div class="row">
 		<div class="large-12 columns">
-				<h2><a href="https://twitter.com/<%= originUser.username %>"><%= originUser.username %></a> consumes
+				<h2><span class="ss-icon ss-standard large">barchart</span> <a href="https://twitter.com/<%= originUser.username %>"><%= originUser.username %></a> consumes
 					<%= users.length === maxCap ? ' at least ' : '' %><strong><%= total %> Tweet<%= total !== 1 ? 's' : '' %></strong> per day (<%= Math.round( total / 24 ) %> per hour)
 					from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %>
 					<%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %>
@@ -47,10 +47,10 @@
 
 	<table>
 		<thead>
-			<tr>
+			<tr class="loudness-<%= Math.round(mean) %>">
 				<th>#</th>
 				<th>Name</th>
-				<th class="tertiary inline-labels">Friends<br/>Followers</th>
+				<th class="tertiary"><span class="inline-labels">Friends<br/>Followers</span></th>
 				<th class="tertiary">Listed</th>
 				<th class="secondary">Account Age (Years)</th>
 				<th>Tweets</th>
@@ -61,7 +61,7 @@
 			<% for(var j=0, k=users.length; j<k; j++) { %>
 			<% if(j >= truncateTopLength && j < ( k - truncateBottomLength - 1 ) ) { %>
 			<% if( !ellipsisShown ) { %>
-			<tr class="truncated"><td colspan="7">
+			<tr class="truncated loudness-<%= Math.round(mean) %>"><td colspan="7">
 				<i class="ss-icon ss-standard large">ellipsis</i>
 			</td></tr>
 			<% ellipsisShown = true; } %>
@@ -99,6 +99,14 @@
 			<% } %>
 		</tbody>
 	</table>
-	<em>Includes all @-replies, which is an overestimation. Twitter only shows you @-replies when you follow the user the reply is to.</em>
+	<footer>
+	<div class="row">
+		<div class="large-12 columns">
+			<h4><em>Includes all @-replies, which is an overestimation. Twitter only shows you @-replies when you follow the user the reply is to.</em></h4>
+		</div>
+		<div class="large-12 columns">
+			This project humbly presented to you by the Leatherman Bros (<a href="http://twitter.com/zachleat">zachleat</a> &amp; <a href="http://twitter.com/danleatherman">danleatherman</a>)
+		</div>
+	</footer>
 </body>
 </html>

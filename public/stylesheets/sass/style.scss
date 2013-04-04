@@ -2,16 +2,15 @@
 @import 'compass/utilities/general/clearfix';
 @import 'grid';
 @import 'ss-standard';
-@import 'ss-social';
 $stack: 'news-gothic-std', 'Helvetica Neue', sans-serif;
-$primary: #0084b4;
+$primary: #4099FF;
 $a: #333;
-$ahov: $primary;
+$ahov: #ccc;
 
 @mixin legible-color-text($background-color){
-background-color: $background-color;
-@if lightness($background-color) > 50% { color:#000000;}
-@if lightness($background-color) <= 50% { color:#FFFFFF;}
+	background-color: $background-color;
+	@if lightness($background-color) > 50% { color:#000000;}
+	@if lightness($background-color) <= 50% { color:#FFFFFF;}
 }
 
 /* -------------------------------------------------- 
@@ -81,13 +80,18 @@ i.ss-icon {
 
 .hide { display: none; }
 
+footer {
+	background-color: #fff;
+	padding: 2em 0;
+	text-align: center;
+	a {
+		color: inherit;
+	}
+}
+
 /* -----------------------------------------
    User Info Styles
 ----------------------------------------- */
-
-@for $i from 0 to 100 {
-
-}
 
 header {
 	p.logout {
@@ -106,6 +110,36 @@ header {
 /* -----------------------------------------
    User List Styles
 ----------------------------------------- */
+$min: 0;
+$max: 100; // Max number of tweets we consider too many
+@for $i from $min to $max {
+
+$bgcolor: darken($primary, $i);
+
+tbody tr.loudness-#{$i} {
+	background-color: $bgcolor;
+	color: #fff;
+	@include single-transition(background-color, 0.2s, ease-in);
+	&:hover {
+		background-color: lighten($bgcolor, 3%);
+		color: #fff;
+	}
+}
+
+}
+
+@for $i from 100 to 150 {
+
+tbody tr.loudness-#{$i} {
+	background-color: darken($primary, 100%);
+	color: #fff;
+	&:hover {
+		background-color: lighten(darken($primary, 100%), 3%);
+		color: #fff;
+	}
+}
+
+}
 
 img.avatar {
 	border-radius: 5px;
@@ -146,18 +180,6 @@ td:last-child {
 .truncated td {
 	padding: 0.5em .5em 0;
 	text-align: center;
-}
-
-@for $i from 0 through 45 {
-	$bgcolor: lighten($primary, $i * 2);
-	tbody tr:nth-child(#{$i}) {
-		background-color: $bgcolor;
-		color: darken($bgcolor, $i + 50);
-		@include single-transition(all, 0.2s, ease-in);
-		&:hover {
-			background-color: darken($bgcolor, 5%);
-		}
-	}
 }
 
 .secondary,
