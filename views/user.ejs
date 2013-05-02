@@ -16,31 +16,35 @@
 	</script>
 </head>
 <body>
+<% var repeat = originUser.background_tile === true ? 'repeat' : 'no-repeat' %>
+<% var background = originUser.background_img === true ? ('url("' + originUser.background_img_url + '")' + repeat) : ('#' + originUser.background_color + '') %>
 
-<div class="loudness-<%= Math.round(mean) %> user-info">
-	<header>
-		<div class="row collapse">
-			<div class="large-10 small-11 columns">
-				<h1><a href="https://twitter.com/<%= originUser.username %>"><img src="<%= originUser.avatar %>" class="avatar"><%= originUser.username %><span class="secondary">'s </span></a><span class="tertiary">twitter </span><span class="secondary">silencer</span></h1>
+<div style="background: <%= background %>">
+	<div class="user-info">
+		<header>
+			<div class="row collapse">
+				<div class="large-10 small-11 columns">
+					<h1><a href="https://twitter.com/<%= originUser.username %>"><img src="<%= originUser.avatar %>" class="avatar"><%= originUser.username %><span class="secondary">'s </span></a><span class="tertiary">twitter </span><span class="secondary">silencer</span></h1>
+				</div>
+				<div class="large-1 small-1 columns">
+					<p class="text-right logout"><a href="<%= logout %>"><i class="ss-icon ss-standard large">logout</i></a></p>
+				</div>
 			</div>
-			<div class="large-1 small-1 columns">
-				<p class="text-right logout"><a href="<%= logout %>"><i class="ss-icon ss-standard large">logout</i></a></p>
-			</div>
-		</div>
-	</header>
+		</header>
 
-	<div class="row">
-		<div class="large-12 columns">
-				<h2><span class="ss-icon ss-standard large">barchart</span> <a href="https://twitter.com/<%= originUser.username %>"><%= originUser.username %></a> consumes
-					<%= users.length === maxCap ? ' at least ' : '' %><strong><%= total %> Tweet<%= total !== 1 ? 's' : '' %></strong> per day (<%= Math.round( total / 24 ) %> per hour)
-					from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %>
-					<%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %>
-					and publishes <%= originUser.tweetsPerDay %> Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day.
-				</h2>
-				<ul>
-					<li>Mean: <%= mean %></li>
-					<li>Median: <%= median %></li>
-				</ul>
+		<div class="row">
+			<div class="large-12 columns">
+					<h2><span class="ss-icon ss-standard large">barchart</span> <a href="https://twitter.com/<%= originUser.username %>"><%= originUser.username %></a> consumes
+						<%= users.length === maxCap ? ' at least ' : '' %><strong><%= total %> Tweet<%= total !== 1 ? 's' : '' %></strong> per day (<%= Math.round( total / 24 ) %> per hour)
+						from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %>
+						<%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %>
+						and publishes <%= originUser.tweetsPerDay %> Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day.
+					</h2>
+					<ul>
+						<li>Mean: <%= mean %></li>
+						<li>Median: <%= median %></li>
+					</ul>
+			</div>
 		</div>
 	</div>
 </div>
