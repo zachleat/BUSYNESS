@@ -73,6 +73,10 @@ var Silencer = {
 			favorites: user.favourites_count,
 			description: user.description,
 			avatar: user.profile_image_url,
+			background_img: user.profile_use_background_image,
+			background_img_url: user.profile_background_image_url_https,
+			background_color: user.profile_background_color,
+			text_color: user.profile_text_color,
 			ageInDays: ageInDays,
 			tweetsPerDay: ( user.statuses_count / ageInDays ).toFixed( 2 )
 		};
