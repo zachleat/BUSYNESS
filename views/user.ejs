@@ -16,10 +16,9 @@
 	</script>
 </head>
 <body>
-<% var repeat = originUser.background_tile === true ? 'repeat' : 'no-repeat' %>
-<% var background = originUser.background_img === true ? ('url("' + originUser.background_img_url + '")' + repeat) : ('#' + originUser.background_color + '') %>
+<% var background = originUser.background_img === true ? ('url("' + originUser.background_img_url + '") no-repeat center top fixed; background-size: cover;') : ('#' + originUser.background_color + '') %>
 
-<div style="background: <%= background %>">
+<div class="background" style="background: <%= background %>">
 	<div class="user-info">
 		<header>
 			<div class="row collapse">
