@@ -16,9 +16,19 @@
 	</script>
 </head>
 <body>
-<% var background = originUser.background_img === true ? ('url("' + originUser.background_img_url + '") no-repeat center top fixed; background-size: cover;') : ('#' + originUser.background_color + '') %>
 
-<div class="background" style="background: <%= background %>">
+<%
+
+function getContrast50(hexcolor){
+	return (parseInt(hexcolor, 16) > 0xffffff/2) ? '#000' : '#fff';
+}
+
+%>
+
+<% var repeat = originUser.background_tile === true ? 'repeat' : 'no-repeat' %>
+<% var background = originUser.background_img === true ? ('url("' + originUser.background_img_url + '") ' + repeat + ' center top fixed') : ('#' + originUser.background_color + '') %>
+
+<div style="background: <%= background %>; color: <%= getContrast50(originUser.background_color) %>;">
 	<div class="user-info">
 		<header>
 			<div class="row collapse">
