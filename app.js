@@ -2,8 +2,7 @@ var express = require( 'express' ),
 	http = require( 'http' ),
 	path = require( 'path' ),
 	config = require( './config.json' ),
-	Rsvp = require( './lib/rsvp' ),
-	im = require('imagemagick');
+	Rsvp = require( './lib/rsvp' );
 	IS_PRODUCTION = process.env.NODE_ENV == 'production';
 
 config.port = process.env.PORT || config.defaultPort;
