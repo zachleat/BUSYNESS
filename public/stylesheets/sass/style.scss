@@ -7,12 +7,6 @@ $primary: #4099FF;
 $a: #333;
 $ahov: #ccc;
 
-@mixin legible-color-text($background-color){
-	background-color: $background-color;
-	@if lightness($background-color) > 50% { color:#000000;}
-	@if lightness($background-color) <= 50% { color:#FFFFFF;}
-}
-
 /* -------------------------------------------------- 
    Table of Contents
 -----------------------------------------------------

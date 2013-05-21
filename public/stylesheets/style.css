@@ -109,8 +109,8 @@ select {
 
 .row .row {
   width: auto;
-  margin-left: -0.938em;
-  margin-right: -0.938em;
+  margin-left: -0.9375em;
+  margin-right: -0.9375em;
   margin-top: 0;
   margin-bottom: 0;
   max-width: none;
@@ -1520,7 +1520,6 @@ footer a {
   background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.25));
   background-image: -moz-linear-gradient(bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.25));
   background-image: -o-linear-gradient(bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.25));
-  background-image: -ms-linear-gradient(bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.25));
   background-image: linear-gradient(bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.25));
 }
 .user-info a {
