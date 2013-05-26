@@ -93,8 +93,8 @@ var Silencer = {
 			avatar: user.profile_image_url,
 			background: '#' + user.profile_background_color +
 				( user.profile_use_background_image ? ' url("' + user.profile_background_image_url + '")' : '' ) +
-				( user.profile_background_tile === true ? ' repeat' : ' no-repeat' ), // center top fixed
-			textColor: user.profile_text_color,
+				( user.profile_background_tile === true ? ' repeat' : ' no-repeat' ),
+			textColor: Silencer.getTextColorFromBackgroundColor( user.profile_background_color ), // would use this, but too gross: '#' + user.profile_text_color,
 			ageInDays: ageInDays,
 			ageInYears: ( ageInDays / 365 ).toFixed( 2 ),
 			tweetsPerDay: tweetsPerDay,
