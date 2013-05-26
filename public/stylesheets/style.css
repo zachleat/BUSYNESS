@@ -29,7 +29,6 @@ h1, h2, h3, h4, h5, h6, th {
 
 h1 {
   margin: 0.5em 0;
-  text-align: center;
 }
 
 strong {
@@ -55,19 +54,24 @@ a:hover, a:focus {
 /* -----------------------------------------
    User Info Styles
 ----------------------------------------- */
-.user-info {
-  background-image: -webkit-gradient(linear, 50% 100%, 50% 0%, color-stop(0%, rgba(0, 0, 0, 0.65)), color-stop(100%, rgba(0, 0, 0, 0.25)));
-  background-image: -webkit-linear-gradient(bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.25));
-  background-image: -moz-linear-gradient(bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.25));
-  background-image: -o-linear-gradient(bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.25));
-  background-image: linear-gradient(bottom, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.25));
-}
-.user-info a {
-  color: inherit;
-}
-
 .stats {
   font-size: 1.5em;
+}
+
+.user-info.user-info-white {
+  color: #fff;
+}
+
+.user-info.user-info-black {
+  color: #000;
+}
+
+.user-info-white .row {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.user-info-black .row {
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .headline-stats {
@@ -131,7 +135,8 @@ a:hover, a:focus {
   -o-transition: background-color 0.2s ease-in;
   transition: background-color 0.2s ease-in;
 }
-.loudness:hover {
+
+tr.loudness:hover {
   color: #fff;
 }
 
@@ -548,8 +553,11 @@ img.avatar {
   display: inline;
   max-width: 4em;
   margin-right: 1em;
-  border: 4px #fff solid;
   vertical-align: middle;
+}
+
+h1 img.avatar {
+  border: 4px #fff solid;
 }
 
 /* Main Stats Table showing users friends */

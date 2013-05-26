@@ -56,8 +56,8 @@ app.configure( 'development', function() {
 var Silencer = {
 	PAGE_TITLE: 'Busyness',
 	MAX_CAP: 1000,
-	TRUNCATE_PERCENTAGE_TOP: 0.1,
-	TRUNCATE_PERCENTAGE_BOTTOM: 0.05,
+	TRUNCATE_PERCENTAGE_TOP: 0.07,
+	TRUNCATE_PERCENTAGE_BOTTOM: 0.03,
 	MIN_TRUNCATE_TOP: 20,
 	MIN_TRUNCATE_BOTTOM: 10,
 	CUTOFF_AVG_TO_CRAZY: 40,
@@ -92,9 +92,10 @@ var Silencer = {
 			description: user.description,
 			avatar: user.profile_image_url,
 			background: '#' + user.profile_background_color +
-				( user.profile_use_background_image ? ' url("' + user.profile_background_image_url + '")' : '' ) +
-				( user.profile_background_tile === true ? ' repeat' : ' no-repeat' ),
-			textColor: Silencer.getTextColorFromBackgroundColor( user.profile_background_color ), // would use this, but too gross: '#' + user.profile_text_color,
+				( user.profile_use_background_image ? ' url("' + user.profile_background_image_url + '")' + 
+					( user.profile_background_tile === true ? ' repeat' : ' no-repeat' ) : '' ),
+			// would use this, but too gross: '#' + user.profile_text_color,
+			textColor: Silencer.getTextColorFromBackgroundColor( user.profile_background_color ),
 			ageInDays: ageInDays,
 			ageInYears: ( ageInDays / 365 ).toFixed( 2 ),
 			tweetsPerDay: tweetsPerDay,

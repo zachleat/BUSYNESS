@@ -37,7 +37,6 @@ h1,h2,h3,h4,h5,h6,th {
 
 h1 {
 	margin: 0.5em 0;
-	text-align: center;
 }
 
 strong {
@@ -66,15 +65,20 @@ a {
    User Info Styles
 ----------------------------------------- */
 
-.user-info {
-	@include background-image(linear-gradient(bottom, rgba(#000000, 0.65), rgba(#000000, 0.25)));
-	a {
-		color: inherit;
-	}
-}
-
 .stats {
 	font-size: 1.5em;
+}
+.user-info.user-info-white {
+	color: #fff;
+}
+.user-info.user-info-black {
+	color: #000;
+}
+.user-info-white .row {
+	background-color: rgba(0, 0, 0, .4);
+}
+.user-info-black .row {
+	background-color: rgba(255, 255, 255, .4);
 }
 
 .headline-stats {
@@ -126,10 +130,9 @@ a {
 .loudness {
 	color: #fff;
 	@include single-transition(background-color, 0.2s, ease-in);
-
-	&:hover {
-		color: #fff;
-	}
+}
+tr.loudness:hover {
+	color: #fff;
 }
 
 $cutoff: 40;
@@ -161,8 +164,10 @@ img.avatar {
 	display: inline;
 	max-width: 4em;
 	margin-right: 1em;
-	border: 4px #fff solid; // to match twitters style
 	vertical-align: middle;
+}
+h1 img.avatar {
+	border: 4px #fff solid; // to match twitters style
 }
 
 /* Main Stats Table showing users friends */

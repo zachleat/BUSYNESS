@@ -18,8 +18,7 @@
 </head>
 <body>
 
-<div class="user-info" style="background: <%= originUser.background %>; color: <%= originUser.textColor %>;">
-<!-- <div class="loudness loudness-<%= originUser.loudness %> user-info"> -->
+<div class="loudness loudness-<%= originUser.loudness %> user-info user-info-<%= originUser.textColor %>" style="background: <%= originUser.background %>;">
 	<header>
 		<div class="row">
 			<h1><img src="<%= originUser.avatar %>" class="avatar"><%= originUser.username %><span class="secondary">’s BUSYNESS</span></h1>
