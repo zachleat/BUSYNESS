@@ -55,7 +55,7 @@ app.configure( 'development', function() {
 });
 
 var Silencer = {
-	PAGE_TITLE: 'BUSYNESS',
+	APP_NAME: 'BUSYNESS',
 	// This value is probably the biggest tweak we can change for server performance
 	MAX_CAP: 600,
 	TRUNCATE_PERCENTAGE_TOP: 0.1,
@@ -123,7 +123,7 @@ app.get( '/', function( req, res ) {
 		res.redirect( '/' + req.cookies.username );
 	} else {
 		res.render('index', {
-			title: Silencer.PAGE_TITLE,
+			title: Silencer.APP_NAME,
 			login: config.login
 		});
 	}
@@ -171,7 +171,7 @@ app.get( '/:username', function( req, res ) {
 	function errorCallback( error ) {
 		console.log( 'Error callback: ', error );
 		res.render('error', {
-			title: "Busyness Error",
+			title: Silencer.APP_NAME + " Error",
 			error: JSON.stringify( error )
 		});
 	}
@@ -222,7 +222,7 @@ app.get( '/:username', function( req, res ) {
 				truncatePercentageBottom = Math.floor( users.length * Silencer.TRUNCATE_PERCENTAGE_BOTTOM );
 
 			res.render('user', {
-				title: Silencer.PAGE_TITLE + ' for ' + originUser.username,
+				title: Silencer.APP_NAME + ' for ' + originUser.username,
 				logout: config.logout,
 				originUser: originUser,
 				total: Math.round( totalTweetsPerDay ),
