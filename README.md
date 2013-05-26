@@ -23,3 +23,7 @@ Heroku Environment Variables
 * `NODE_ENV = 'production'`
 * `consumerKey = ''`
 * `consumerSecret = ''`
+
+# Sources
+
+* [Briefcase Icon](http://www.iconfinder.com/icondetails/61690/128/briefcase_carreer_suitcase_icon)
