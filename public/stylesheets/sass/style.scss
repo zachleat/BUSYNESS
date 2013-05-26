@@ -1,11 +1,9 @@
 @import 'compass/css3';
 @import 'compass/utilities/general/clearfix';
-@import 'grid';
-@import 'ss-standard';
 $stack: 'news-gothic-std', 'Helvetica Neue', sans-serif;
 $primary: #4099FF;
-$a: #333;
-$ahov: #ccc;
+$a: #444;
+$ahov: #222;
 
 /* -------------------------------------------------- 
    Table of Contents
@@ -33,12 +31,13 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
-h1,h2,h3,h4,h5,h6, th {
+h1,h2,h3,h4,h5,h6,th {
 	font-weight: 700;
 }
 
 h1 {
 	margin: 0.5em 0;
+	text-align: center;
 }
 
 strong {
@@ -47,40 +46,20 @@ strong {
 
 a {
 	color: $a;
-	text-decoration: none;
-	&:hover {
+
+	&:hover,
+	&:focus {
 		color: $ahov;
 	}
 }
 
-i.ss-icon {
-	&.small {
-		font-size: 1em;
-	}
-	&.large {
-		font-size: 2em;
-	}
+/* Footnotes */
+:target {
+	background-color: #ffc;
 }
 
-.left { float: left; }
-
-.right { float: right; }
-
-.text-left { text-align: left; }
-
-.text-right { text-align: right; }
-
-.text-center { text-align: center; }
-
-.hide { display: none; }
-
-footer {
-	background-color: #fff;
-	padding: 2em 0;
-	text-align: center;
-	a {
-		color: inherit;
-	}
+.row {
+	padding: 1em;
 }
 
 /* -----------------------------------------
@@ -94,63 +73,104 @@ footer {
 	}
 }
 
-header {
-	p.logout {
-		line-height: 1.75;
-		margin-right: 0.5em;
-	}
-	img.avatar {
-		border: 4px #fff solid; // to match twitter's style
-		margin-left: 0.5em;
-	}
-}
-
 .stats {
 	font-size: 1.5em;
+}
+
+.headline-stats {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	margin-bottom: 2em;
+}
+.headline-stats li {
+	text-align: center;
+	padding: 1em 0;
+}
+.headline-stats li:first-child {
+	border-bottom: 1px solid currentColor;
+}
+.headline-stats p {
+	margin: 0;
+	font-style: italic;
+}
+.headline-stats label {
+	font-size: 1em;
+	display: block;
+	text-transform: uppercase;
+}
+.headline-stats .value {
+	font-size: 4em;
+	font-weight: bold;
+	display: block;
+}
+.headline-stats + p {
+	margin-bottom: 0;
+}
+@media (min-width: 25em) {
+	.headline-stats li {
+		width: 50%;
+		float: left;
+		@include box-sizing(border-box);
+	}
+	.headline-stats li:first-child {
+		border-bottom: none;
+	}
 }
 
 /* -----------------------------------------
    User List Styles
 ----------------------------------------- */
-$min: 0;
-$max: 100; // Max number of tweets we consider too many
-@for $i from $min to $max {
 
-$bgcolor: darken($primary, $i);
+.loudness {
+	color: #fff;
+	@include single-transition(background-color, 0.2s, ease-in);
 
-// tbody tr.loudness-#{$i} {
-// 	background-color: $bgcolor;
-// 	color: #fff;
-// 	@include single-transition(background-color, 0.2s, ease-in);
-// 	&:hover {
-// 		background-color: lighten($bgcolor, 3%);
-// 		color: #fff;
-// 	}
-// }
-
+	&:hover {
+		color: #fff;
+	}
 }
 
-@for $i from 100 to 150 {
+$cutoff: 40;
 
-// tbody tr.loudness-#{$i} {
-// 	background-color: darken($primary, 100%);
-// 	color: #fff;
-// 	&:hover {
-// 		background-color: lighten(darken($primary, 100%), 3%);
-// 		color: #fff;
-// 	}
-// }
+@for $i from 0 to $cutoff {
+	$bgcolor: darken($primary, $i);
 
+	.loudness-#{$i} {
+		background-color: $bgcolor;
+	}
+	tr.loudness-#{$i}:hover {
+		background-color: lighten($bgcolor, 3%);
+	}
+}
+
+@for $i from 0 through 10 {
+	$bgcolor: lighten(#000, 20-(2*$i));
+
+	.loudness-#{$i+$cutoff} {
+		background-color: $bgcolor;
+	}
+	tr.loudness-#{$i+$cutoff}:hover {
+		background-color: lighten($bgcolor, 3%);
+	}
 }
 
 img.avatar {
-	border-radius: 5px;
+	border-radius: .3125em;
 	display: inline;
 	max-width: 4em;
 	margin-right: 1em;
-	border: none;
+	border: 4px #fff solid; // to match twitters style
 	vertical-align: middle;
 }
+
+/* Main Stats Table showing users friends */
+
+.screenname > a {
+	white-space: nowrap;
+}
+
 table {
 	width: 100%;
 	border-spacing: 0;
@@ -158,11 +178,9 @@ table {
 th {
 	font-size: 1em;
 }
-th,
 td {
-	padding: .5em;
-	margin: 0;
-	text-align: left;
+	white-space: nowrap;
+
 	a {
 		color: inherit;
 		display: block;
@@ -171,17 +189,18 @@ td {
 		}
 	}
 }
-th:first-child,
-td:first-child {
-	max-width: 65px;
-}
-th:last-child,
-td:last-child {
-	font-weight: bold;
+th,
+td {
+	padding: .5em;
+	margin: 0;
+	text-align: left;
 }
 .truncated td {
-	padding: 0.5em .5em 0;
+	padding: .5em;
 	text-align: center;
+	font-size: 2em;
+	font-family: Gill Sans, sans-serif;
+	font-weight: bold;
 }
 
 .secondary,
@@ -190,9 +209,22 @@ th label,
 td label {
 	display: none;
 }
+.subth {
+	display: block;
+}
 
 .rank {
+	max-width: 5em;
+}
+td.rank {
 	font-size: 2em;
+}
+.avg {
+	font-weight: bold;
+}
+.avg div {
+	font-weight: normal;
+	font-style: italic;
 }
 
 @media (min-width: 30em) {
@@ -203,7 +235,7 @@ td label {
 		display: inline;
 	}
 }
-@media (min-width: 40em) {
+@media (min-width: 44em) {
 	th label,
 	td label {
 		display: inline;
@@ -215,6 +247,9 @@ td label {
 		display: table-cell;
 	}
 	span.tertiary {
+		display: inline;
+	}
+	.subth {
 		display: inline;
 	}
 }

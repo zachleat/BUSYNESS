@@ -2,6 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title><%= title %></title>
 	<link rel='stylesheet' href='/stylesheets/style.css'>
 	<script>
@@ -17,100 +18,61 @@
 </head>
 <body>
 
-<%
-
-function getContrastYIQ(hexcolor){
-	var r = parseInt(hexcolor.substr(0,2),16);
-	var g = parseInt(hexcolor.substr(2,2),16);
-	var b = parseInt(hexcolor.substr(4,2),16);
-	var yiq = ((r*299)+(g*587)+(b*114))/1000;
-	return (yiq >= 128) ? 'black' : 'white';
-}
-
-%>
-
-<% var repeat = originUser.background_tile === true ? 'repeat' : 'no-repeat' %>
-<% var background = originUser.background_img === true ? ('url("' + originUser.background_img_url + '") ' + repeat + ' center top fixed') : ('#' + originUser.background_color + '') %>
-
-<div style="background: <%= background %>; color: <%= getContrastYIQ(originUser.background_color) %>;">
-	<div class="user-info">
-		<header>
-			<div class="row collapse">
-				<div class="large-10 small-11 columns">
-					<h1><a href="https://twitter.com/<%= originUser.username %>"><img src="<%= originUser.avatar %>" class="avatar"><%= originUser.username %><span class="secondary">'s </span></a><span class="tertiary">twitter </span><span class="secondary">silencer</span></h1>
-				</div>
-				<div class="large-1 small-1 columns">
-					<p class="text-right logout"><a href="<%= logout %>"><i class="ss-icon ss-standard large">logout</i></a></p>
-				</div>
-			</div>
-		</header>
-
+<div class="user-info" style="background: <%= originUser.background %>; color: <%= originUser.textColor %>;">
+<!-- <div class="loudness loudness-<%= originUser.loudness %> user-info"> -->
+	<header>
 		<div class="row">
-			<div class="large-12 columns">
-					<h2><span class="ss-icon ss-standard large">barchart</span> <a href="https://twitter.com/<%= originUser.username %>"><%= originUser.username %></a> consumes
-						<%= users.length === maxCap ? ' at least ' : '' %><strong><%= total %> Tweet<%= total !== 1 ? 's' : '' %></strong> per day (<%= Math.round( total / 24 ) %> per hour)
-						from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %>
-						<%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %>
-						and publishes <%= originUser.tweetsPerDay %> Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day.
-					</h2>
-					<ul>
-						<li>Mean: <%= mean %></li>
-						<li>Median: <%= median %></li>
-					</ul>
-			</div>
+			<h1><img src="<%= originUser.avatar %>" class="avatar"><%= originUser.username %><span class="secondary">’s BUSYNESS</span></h1>
 		</div>
+	</header>
+
+	<div class="row">
+		<ul class="headline-stats">
+			<li class="consume"><label>Consumes <%= users.length === maxCap ? ' at least ' : '' %></label><span class="value"><%= total %></span> <span class="description">Tweet<%= total !== 1 ? 's' : '' %> per day from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %> <%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %></span><p>(about <%= Math.round( total / 24 ) %> per hour)</p></li>
+			<li class="publish"><label>Publishes</label> <span class="value"><%= originUser.tweetsPerDay %></span> <span class="description">Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day</span></li>
+		</ul>
+		<p>On average, each of <%= originUser.username %>’s friends publish <%= mean %> tweet<%= mean !== 1 ? 's' : '' %> every day. <%= originUser.username %>’s median friend publishes <%= median %> tweet<%= median !== 1 ? 's' : '' %> per day.</p>
 	</div>
 </div>
 
 	<table>
 		<thead>
-			<tr class="loudness-<%= Math.round(mean) %>">
-				<th>#</th>
+			<tr class="loudness loudness-<%= originUser.loudness %>">
+				<th class="rank">#</th>
 				<th>Name</th>
 				<th class="tertiary"><span class="inline-labels">Friends<br/>Followers</span></th>
-				<th class="tertiary">Listed</th>
-				<th class="secondary">Account Age (Years)</th>
+				<th class="secondary">Account Age <span class="subth">(Years)</span></th>
 				<th>Tweets</th>
-				<th>Average Tweets per Day</th>
+				<th class="avg">Average Tweets <span class="subth">(per Day)</span></th>
 			</tr>
 		</thead>
 		<tbody>
 			<% for(var j=0, k=users.length; j<k; j++) { %>
 			<% if(j >= truncateTopLength && j < ( k - truncateBottomLength - 1 ) ) { %>
 			<% if( !ellipsisShown ) { %>
-			<tr class="truncated loudness-<%= Math.round(mean) %>"><td colspan="7">
-				<i class="ss-icon ss-standard large">ellipsis</i>
+			<tr class="truncated loudness loudness-<%= originUser.loudness %>"><td colspan="7">
+				…
 			</td></tr>
 			<% ellipsisShown = true; } %>
 			<% continue; } %>
-			<tr class="loudness-<%= Math.round( users[j].tweetsPerDay ) %>">
+			<tr class="loudness loudness-<%= users[j].loudness %>">
 				<td class="rank"><%= (j+1) %></td>
 				<td class="screenname"><a href="https://twitter.com/<%= users[j].username %>"><img src="<%= users[j].avatar %>" class="avatar"><span class="secondary"><%= users[j].username %></span></a></td>
 				<td class="tertiary">
-					<a href="https://twitter.com/<%= users[j].username %>">
 					<div><%= users[j].friends %><label> friends</label></div>
 					<div><%= users[j].followers %><label> followers</label></div>
-					</a>
-				</td>
-				<td class="tertiary">
-					<a href="https://twitter.com/<%= users[j].username %>">
-						<%= users[j].listed %>
-					</a>
 				</td>
 				<td class="secondary">
-					<a href="https://twitter.com/<%= users[j].username %>">
-						<%= ( users[j].ageInDays / 365 ).toFixed( 2 ) %>
-					</a>
+					<%= users[j].ageInYears %> <label>year<%= users[j].ageInYears !== 1 ? 's' : '' %></label>
 				</td>
 				<td>
-					<a href="https://twitter.com/<%= users[j].username %>">
-						<%= users[j].tweets %>
-					</a>
+					<%= users[j].tweets %>
 				</td>
-				<td>
-					<a href="https://twitter.com/<%= users[j].username %>">
-						<%= users[j].tweetsPerDay %> <label>per day</label>
-					</a>
+				<td class="avg">
+					<%= users[j].tweetsPerDay %> <label>per day</label>
+					<% if( ( users[j].tweetsPerDay * 100 / total ) > 2 ) { %>
+						<div><%= ( users[j].tweetsPerDay * 100 / total ).toFixed( 2 ) %>%<label> of total</label></div>
+					<% } %>
 				</td>
 			</tr>
 			<% } %>
@@ -118,12 +80,11 @@ function getContrastYIQ(hexcolor){
 	</table>
 	<footer>
 	<div class="row">
-		<div class="large-12 columns">
-			<h4><em>Includes all @-replies, which is an overestimation. Twitter only shows you @-replies when you follow the user the reply is to.</em></h4>
-		</div>
-		<div class="large-12 columns">
-			This project humbly presented to you by the Leatherman Bros (<a href="http://twitter.com/zachleat">zachleat</a> &amp; <a href="http://twitter.com/danleatherman">danleatherman</a>)
-		</div>
+		<ol>
+			<li id="evendist">Time interval estimations assume an even distribution.</li>
+			<li><a href="https://support.twitter.com/articles/14023-what-are-replies-and-mentions">Each individual average per day includes all @-replies, which is an overestimation. Twitter only shows you @-replies when you follow the user the reply is to.</a></li>
+		</ol>
+		<p>This project humbly presented to you by the Leatherman Bros (<a href="http://twitter.com/zachleat">@zachleat</a> &amp; <a href="http://twitter.com/danleatherman">@danleatherman</a>)</p>
 	</footer>
 </body>
 </html>

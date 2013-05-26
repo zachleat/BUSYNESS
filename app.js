@@ -3,7 +3,7 @@ var express = require( 'express' ),
 	path = require( 'path' ),
 	config = require( './config.json' ),
 	Rsvp = require( './lib/rsvp' ),
-	im = require('imagemagick');
+	// im = require('imagemagick'),
 	IS_PRODUCTION = process.env.NODE_ENV == 'production';
 
 config.port = process.env.PORT || config.defaultPort;
@@ -43,7 +43,7 @@ app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	app.use(express.cookieParser( 'rhino_spidermonkey_bowling_chimpanzee' ));
-// app.use(express.session({ secret: 'rhino_spidermonkey_bowling_chimpanzee' }));
+	// app.use(express.session({ secret: 'rhino_spidermonkey_bowling_chimpanzee' }));
 	app.use(express.session());
 	app.use(app.router);
 	app.use(express.static(path.join(__dirname, 'public' )));
@@ -54,15 +54,32 @@ app.configure( 'development', function() {
 });
 
 var Silencer = {
-	PAGE_TITLE: 'Silencer',
+	PAGE_TITLE: 'Busyness',
 	MAX_CAP: 1000,
-	TRUNCATE_PERCENTAGE: 0.05,
+	TRUNCATE_PERCENTAGE_TOP: 0.1,
+	TRUNCATE_PERCENTAGE_BOTTOM: 0.05,
 	MIN_TRUNCATE_TOP: 20,
-	MIN_TRUNCATE_BOTTOM: 20,
+	MIN_TRUNCATE_BOTTOM: 10,
+	CUTOFF_AVG_TO_CRAZY: 40,
 	lookupUrl: 'https://api.twitter.com/1.1/users/lookup.json',
+	loudnessRating: function( tweetsPerDay ) {
+		var $cutoff = Silencer.CUTOFF_AVG_TO_CRAZY;
+		if( tweetsPerDay <= $cutoff ) {
+			return Math.round( tweetsPerDay );
+		}
+		return Math.min( Math.round( $cutoff + tweetsPerDay / 10 ), $cutoff + 10 );
+	},
+	getTextColorFromBackgroundColor: function(hexcolor){ //getContrastYIQ
+		var r = parseInt(hexcolor.substr(0,2),16);
+		var g = parseInt(hexcolor.substr(2,2),16);
+		var b = parseInt(hexcolor.substr(4,2),16);
+		var yiq = ((r*299)+(g*587)+(b*114))/1000;
+		return (yiq >= 128) ? 'black' : 'white';
+	},
 	convertTwitterUser: function( user ) {
 		var birth = new Date(user.created_at),
-			ageInDays = ( ( new Date() - birth ) / ( 1000*60*60*24 ) ).toFixed( 2 );
+			ageInDays = ( ( new Date() - birth ) / ( 1000*60*60*24 ) ).toFixed( 2 ),
+			tweetsPerDay = ( user.statuses_count / ageInDays ).toFixed( 2 );
 
 		return {
 			username: user.screen_name,
@@ -74,13 +91,14 @@ var Silencer = {
 			favorites: user.favourites_count,
 			description: user.description,
 			avatar: user.profile_image_url,
-			background_img: user.profile_use_background_image,
-			background_tile: user.profile_background_tile,
-			background_img_url: user.profile_background_image_url_https,
-			background_color: user.profile_background_color,
-			text_color: user.profile_text_color,
+			background: '#' + user.profile_background_color +
+				( user.profile_use_background_image ? ' url("' + user.profile_background_image_url + '")' : '' ) +
+				( user.profile_background_tile === true ? ' repeat' : ' no-repeat' ), // center top fixed
+			textColor: user.profile_text_color,
 			ageInDays: ageInDays,
-			tweetsPerDay: ( user.statuses_count / ageInDays ).toFixed( 2 )
+			ageInYears: ( ageInDays / 365 ).toFixed( 2 ),
+			tweetsPerDay: tweetsPerDay,
+			loudness: Silencer.loudnessRating( tweetsPerDay )
 		};
 	},
 	middleware: function( req, res, callback ) {
@@ -98,10 +116,14 @@ var Silencer = {
 };
 
 app.get( '/', function( req, res ) {
-	res.render('index', {
-		title: Silencer.PAGE_TITLE,
-		login: config.login
-	});
+	if( req.cookies && req.cookies.token && req.cookies.secret && req.cookies.username ) {
+		res.redirect( '/' + req.cookies.username );
+	} else {
+		res.render('index', {
+			title: Silencer.PAGE_TITLE,
+			login: config.login
+		});
+	}
 });
 
 function twitterFetchPromise( url, token, secret ) {
@@ -116,18 +138,39 @@ function twitterFetchPromise( url, token, secret ) {
 	return promise;
 }
 
-function errorCallback( error ) {
-	console.log( error );
-}
-
 app.get( '/:username', function( req, res ) {
-	var token = req.session.oauthAccessToken,
-			secret = req.session.oauthAccessTokenSecret,
-			username = req.params.username;
+	var token,
+		secret,
+		username = req.params.username,
+		setCookies = false,
+		cookieOptions = { signed: false, maxAge: 1000*60*60*24*7, httpOnly: true };
+
+	if( req.cookies && req.cookies.token && req.cookies.secret ) {
+		token = req.cookies.token;
+		secret = req.cookies.secret;
+	} else {
+		token = req.session.oauthAccessToken;
+		secret = req.session.oauthAccessTokenSecret;
+		setCookies = true;
+	}
 
 	if( !token || !secret || !username ) {
 		res.redirect( '/' );
 		return;
+	}
+
+	if( setCookies ) {
+		res.cookie( 'token', token, cookieOptions );
+		res.cookie( 'secret', secret, cookieOptions );
+		res.cookie( 'username', username, cookieOptions );
+	}
+
+	function errorCallback( error ) {
+		console.log( 'Error callback: ', error );
+		res.render('error', {
+			title: "Busyness Error",
+			error: JSON.stringify( error )
+		});
 	}
 
 	twitterFetchPromise( 'https://api.twitter.com/1.1/friends/ids.json?screen_name=' + username, token, secret ).then(function( data ) {
@@ -172,7 +215,9 @@ app.get( '/:username', function( req, res ) {
 			median = users[ Math.floor( users.length / 2 ) ].tweetsPerDay;
 			mean = ( totalTweetsPerDay / users.length ).toFixed( 2 );
 
-			var truncatePercentage = Math.floor( users.length * Silencer.TRUNCATE_PERCENTAGE );
+			var truncatePercentageTop = Math.floor( users.length * Silencer.TRUNCATE_PERCENTAGE_TOP ),
+				truncatePercentageBottom = Math.floor( users.length * Silencer.TRUNCATE_PERCENTAGE_BOTTOM );
+
 			res.render('user', {
 				title: Silencer.PAGE_TITLE + ' for ' + originUser.username,
 				logout: config.logout,
@@ -180,8 +225,8 @@ app.get( '/:username', function( req, res ) {
 				total: Math.round( totalTweetsPerDay ),
 				users: users,
 				maxCap: Silencer.MAX_CAP,
-				truncateTopLength: Math.max( truncatePercentage, Silencer.MIN_TRUNCATE_TOP ),
-				truncateBottomLength: Math.max( truncatePercentage, Silencer.MIN_TRUNCATE_BOTTOM ),
+				truncateTopLength: Math.max( truncatePercentageTop, Silencer.MIN_TRUNCATE_TOP ),
+				truncateBottomLength: Math.max( truncatePercentageBottom, Silencer.MIN_TRUNCATE_BOTTOM ),
 				mean: mean,
 				median: median,
 				max: users[ 0 ].tweetsPerDay,
