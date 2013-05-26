@@ -3,14 +3,14 @@
 <div class="loudness loudness-<%= originUser.loudness %> user-info user-info-<%= originUser.textColor %>" style="background: <%= originUser.background %>;">
 	<header>
 		<div class="row">
-			<h1><a href="https://twitter.com/<%= originUser.username %>"><img src="<%= originUser.avatar %>" class="avatar"><%= originUser.username %><span class="secondary"></a>’s BUSYNESS</span></h1>
+			<h1><a href="https://twitter.com/<%= originUser.username %>"><img src="<%= originUser.avatar %>" class="avatar"><%= originUser.username %></a><span class="secondary">’s BUSYNESS</span></h1>
 		</div>
 	</header>
 
 	<div class="row">
 		<ul class="headline-stats">
-			<li class="consume"><label>Consumes <%= users.length === maxCap ? ' at least ' : '' %></label><span class="value"><%= humanize( total ) %></span> <span class="description">Tweet<%= total !== 1 ? 's' : '' %> per day from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %> <%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %></span><p>(about <%= Math.round( total / 24 ) %> per hour)</p></li>
-			<li class="publish"><label>Publishes</label> <span class="value"><%= originUser.tweetsPerDay %></span> <span class="description">Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day</span></li>
+			<li class="consume"><label>Consumes <%= users.length === maxCap ? ' at least ' : '' %></label><span class="value"><%= humanize( total ) %></span> <span class="description">Tweet<%= total !== 1 ? 's' : '' %> per day from <%= users.length %><%= users.length === maxCap ? ( ' of ' + originUser.friends ) : '' %> friend<%= users.length !== 1 ? 's' : '' %> <%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %></span><p>(about <%= Math.round( total / 24 ) %> per hour)</p></li>
+			<li class="publish"><label>Publishes</label> <span class="value"><%= humanize( originUser.tweetsPerDay ) %></span> <span class="description">Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day</span></li>
 		</ul>
 		<p>On average, each of <%= originUser.username %>’s friends publish <%= mean %> tweet<%= mean !== 1 ? 's' : '' %> every day. <%= originUser.username %>’s median friend publishes <%= median %> tweet<%= median !== 1 ? 's' : '' %> per day.</p>
 	</div>
