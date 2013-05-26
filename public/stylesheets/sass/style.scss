@@ -23,10 +23,8 @@ $ahov: #222;
 
 body {
 	background: #fff;
-	font-family: $stack;
-	font-size: 90%;
+	font: .875em/1.2 $stack;
 	font-weight: 400;
-	line-height: 1.2;
 	margin: 0;
 	-webkit-font-smoothing: antialiased;
 }
@@ -36,7 +34,7 @@ h1,h2,h3,h4,h5,h6,th {
 }
 
 h1 {
-	margin: 0.5em 0;
+	margin: 0;
 }
 
 strong {
@@ -52,13 +50,52 @@ a {
 	}
 }
 
-/* Footnotes */
 :target {
 	background-color: #ffc;
 }
 
 .row {
 	padding: 1em;
+}
+
+/* -----------------------------------------
+   Header Styles
+----------------------------------------- */
+
+.title {
+	text-transform: uppercase;
+}
+.title,
+.subtitle {
+	text-align: center;
+}
+.title img {
+	vertical-align: middle;
+}
+
+/* -----------------------------------------
+   Footer Styles
+----------------------------------------- */
+
+.about {
+	text-align: center;
+	margin: 0 auto;
+	max-width: 25em;
+	font-size: 1.142857143em;
+}
+
+/* -----------------------------------------
+   Login Page Styles
+----------------------------------------- */
+
+.signin {
+	margin: 1em 0;
+	text-align: center;
+	display: block;
+	text-decoration: none;
+}
+.signin p {
+	margin-top: 2em;
 }
 
 /* -----------------------------------------
@@ -169,6 +206,16 @@ img.avatar {
 h1 img.avatar {
 	border: 4px #fff solid; // to match twitters style
 }
+h1 a {
+	text-decoration: none;
+	color: inherit;
+
+	&:hover,
+	&:focus {
+		text-decoration: underline;
+		color: inherit;
+	}
+}
 
 /* Main Stats Table showing users friends */
 
@@ -189,7 +236,8 @@ td {
 	a {
 		color: inherit;
 		display: block;
-		&:hover {
+		&:hover,
+		&:focus {
 			color: inherit;
 		}
 	}
@@ -221,14 +269,21 @@ td label {
 .rank {
 	max-width: 5em;
 }
-td.rank {
+td.rank,
+td.avg {
 	font-size: 2em;
+	padding: .25em;
 }
-.avg {
-	font-weight: bold;
+td.avg > label,
+.avg div {
+	font-size: .5em;
+}
+td.avg > label {
+	vertical-align: middle;
+	position: relative;
+	top: -1px;
 }
 .avg div {
-	font-weight: normal;
 	font-style: italic;
 }
 

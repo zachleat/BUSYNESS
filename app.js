@@ -3,6 +3,7 @@ var express = require( 'express' ),
 	path = require( 'path' ),
 	config = require( './config.json' ),
 	Rsvp = require( './lib/rsvp' ),
+	humanize = require('humanize-number'),
 	// im = require('imagemagick'),
 	IS_PRODUCTION = process.env.NODE_ENV == 'production';
 
@@ -54,10 +55,11 @@ app.configure( 'development', function() {
 });
 
 var Silencer = {
-	PAGE_TITLE: 'Busyness',
-	MAX_CAP: 1000,
-	TRUNCATE_PERCENTAGE_TOP: 0.07,
-	TRUNCATE_PERCENTAGE_BOTTOM: 0.03,
+	PAGE_TITLE: 'BUSYNESS',
+	// This value is probably the biggest tweak we can change for server performance
+	MAX_CAP: 600,
+	TRUNCATE_PERCENTAGE_TOP: 0.1,
+	TRUNCATE_PERCENTAGE_BOTTOM: 0.05,
 	MIN_TRUNCATE_TOP: 20,
 	MIN_TRUNCATE_BOTTOM: 10,
 	CUTOFF_AVG_TO_CRAZY: 40,
@@ -94,7 +96,7 @@ var Silencer = {
 			background: '#' + user.profile_background_color +
 				( user.profile_use_background_image ? ' url("' + user.profile_background_image_url + '")' + 
 					( user.profile_background_tile === true ? ' repeat' : ' no-repeat' ) : '' ),
-			// would use this, but too gross: '#' + user.profile_text_color,
+			// would use this, but too many profiles have bad data: '#' + user.profile_text_color,
 			textColor: Silencer.getTextColorFromBackgroundColor( user.profile_background_color ),
 			ageInDays: ageInDays,
 			ageInYears: ( ageInDays / 365 ).toFixed( 2 ),
@@ -231,7 +233,8 @@ app.get( '/:username', function( req, res ) {
 				mean: mean,
 				median: median,
 				max: users[ 0 ].tweetsPerDay,
-				ellipsisShown: false
+				ellipsisShown: false,
+				humanize: humanize
 			});
 		}, errorCallback );
 	}, errorCallback );

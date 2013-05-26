@@ -1,13 +1,13 @@
-<!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title><%= title %></title>
-		<link rel='stylesheet' href='/stylesheets/style.css'>
-	</head>
-	<body>
-		<h1><%= title %></h1>
-		<p><a href="<%= login %>">Login with Twitter</a></p>
-	</body>
-</html>
+<% include header %>
+
+<div class="row">
+	<a href="<%= login %>" class="signin">
+		<h1 class="title"><img src="/images/briefcase.png" alt="Briefcase"> <%= title %></h1>
+		<h2>Use Twitter more efficiently.</h2>
+		<h2>Find the noise in your stream.</h2>
+
+		<p><img src="/images/sign-in-with-twitter.png" alt="Sign In With Twitter"></p>
+	</a>
+</div>
+
+<% include footer %>

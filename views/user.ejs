@@ -1,33 +1,15 @@
-<!doctype html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title><%= title %></title>
-	<link rel='stylesheet' href='/stylesheets/style.css'>
-	<script>
-	// Typekit Async Load
-	(function() {
-		var config = {
-			kitId: 'dpw1zla',
-			scriptTimeout: 3000
-		};
-		var h=document.getElementsByTagName("html")[0];h.className+=" wf-loading";var t=setTimeout(function(){h.className=h.className.replace(/(\s|^)wf-loading(\s|$)/g," ");h.className+=" wf-inactive"},config.scriptTimeout);var tk=document.createElement("script"),d=false;tk.src='//use.typekit.net/'+config.kitId+'.js';tk.type="text/javascript";tk.async="true";tk.onload=tk.onreadystatechange=function(){var a=this.readyState;if(d||a&&a!="complete"&&a!="loaded")return;d=true;clearTimeout(t);try{Typekit.load(config)}catch(b){}};var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(tk,s)
-	})();
-	</script>
-</head>
-<body>
+<% include header %>
 
 <div class="loudness loudness-<%= originUser.loudness %> user-info user-info-<%= originUser.textColor %>" style="background: <%= originUser.background %>;">
 	<header>
 		<div class="row">
-			<h1><img src="<%= originUser.avatar %>" class="avatar"><%= originUser.username %><span class="secondary">’s BUSYNESS</span></h1>
+			<h1><a href="https://twitter.com/<%= originUser.username %>"><img src="<%= originUser.avatar %>" class="avatar"><%= originUser.username %><span class="secondary"></a>’s BUSYNESS</span></h1>
 		</div>
 	</header>
 
 	<div class="row">
 		<ul class="headline-stats">
-			<li class="consume"><label>Consumes <%= users.length === maxCap ? ' at least ' : '' %></label><span class="value"><%= total %></span> <span class="description">Tweet<%= total !== 1 ? 's' : '' %> per day from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %> <%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %></span><p>(about <%= Math.round( total / 24 ) %> per hour)</p></li>
+			<li class="consume"><label>Consumes <%= users.length === maxCap ? ' at least ' : '' %></label><span class="value"><%= humanize( total ) %></span> <span class="description">Tweet<%= total !== 1 ? 's' : '' %> per day from <%= users.length %> friend<%= users.length !== 1 ? 's' : '' %> <%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %></span><p>(about <%= Math.round( total / 24 ) %> per hour)</p></li>
 			<li class="publish"><label>Publishes</label> <span class="value"><%= originUser.tweetsPerDay %></span> <span class="description">Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day</span></li>
 		</ul>
 		<p>On average, each of <%= originUser.username %>’s friends publish <%= mean %> tweet<%= mean !== 1 ? 's' : '' %> every day. <%= originUser.username %>’s median friend publishes <%= median %> tweet<%= median !== 1 ? 's' : '' %> per day.</p>
@@ -58,14 +40,14 @@
 				<td class="rank"><%= (j+1) %></td>
 				<td class="screenname"><a href="https://twitter.com/<%= users[j].username %>"><img src="<%= users[j].avatar %>" class="avatar"><span class="secondary"><%= users[j].username %></span></a></td>
 				<td class="tertiary">
-					<div><%= users[j].friends %><label> friends</label></div>
-					<div><%= users[j].followers %><label> followers</label></div>
+					<div><%= humanize( users[j].friends ) %><label> friend<%= users[j].friends !== 1 ? 's' : '' %></label></div>
+					<div><%= humanize( users[j].followers ) %><label> follower<%= users[j].followers !== 1 ? 's' : '' %></label></div>
 				</td>
 				<td class="secondary">
 					<%= users[j].ageInYears %> <label>year<%= users[j].ageInYears !== 1 ? 's' : '' %></label>
 				</td>
 				<td>
-					<%= users[j].tweets %>
+					<%= humanize( users[j].tweets ) %><label> tweet<%= users[j].tweets !== 1 ? 's' : '' %></label>
 				</td>
 				<td class="avg">
 					<%= users[j].tweetsPerDay %> <label>per day</label>
@@ -77,13 +59,11 @@
 			<% } %>
 		</tbody>
 	</table>
-	<footer>
 	<div class="row">
 		<ol>
 			<li id="evendist">Time interval estimations assume an even distribution.</li>
 			<li><a href="https://support.twitter.com/articles/14023-what-are-replies-and-mentions">Each individual average per day includes all @-replies, which is an overestimation. Twitter only shows you @-replies when you follow the user the reply is to.</a></li>
 		</ol>
-		<p>This project humbly presented to you by the Leatherman Bros (<a href="http://twitter.com/zachleat">@zachleat</a> &amp; <a href="http://twitter.com/danleatherman">@danleatherman</a>)</p>
-	</footer>
-</body>
-</html>
+	</div>
+
+<% include footer %>
