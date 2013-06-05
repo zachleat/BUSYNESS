@@ -23,6 +23,7 @@ Heroku Environment Variables
 * `NODE_ENV = 'production'`
 * `consumerKey = ''`
 * `consumerSecret = ''`
+* `NODEFLY_ID = ''`
 
 # Sources
 

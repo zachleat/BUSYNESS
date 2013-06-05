@@ -1,11 +1,21 @@
+var IS_PRODUCTION = process.env.NODE_ENV == 'production';
+
+if( IS_PRODUCTION ) {
+	require('nodefly').profile(
+		process.env.NODEFLY_ID,
+		['twitter-silencer', 'Heroku'],
+		{ // time in ms when the event loop is considered blocked
+			blockThreshold: 10
+		}
+	);
+}
+
 var express = require( 'express' ),
 	http = require( 'http' ),
 	path = require( 'path' ),
 	config = require( './config.json' ),
 	Rsvp = require( './lib/rsvp' ),
-	humanize = require('humanize-number'),
-	// im = require('imagemagick'),
-	IS_PRODUCTION = process.env.NODE_ENV == 'production';
+	humanize = require('humanize-number');
 
 config.port = process.env.PORT || config.defaultPort;
 
