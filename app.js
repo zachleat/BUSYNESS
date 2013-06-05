@@ -15,7 +15,8 @@ var express = require( 'express' ),
 	path = require( 'path' ),
 	config = require( './config.json' ),
 	Rsvp = require( './lib/rsvp' ),
-	humanize = require('humanize-number');
+	humanize = require('humanize-number'),
+	SESSION_SECRET = process.env.SESSION_SECRET || config.developmentSessionSecret;
 
 config.port = process.env.PORT || config.defaultPort;
 
@@ -53,15 +54,22 @@ app.configure(function(){
 	app.use(express.logger( 'dev' ));
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
-	app.use(express.cookieParser( 'rhino_spidermonkey_bowling_chimpanzee' ));
-	// app.use(express.session({ secret: 'rhino_spidermonkey_bowling_chimpanzee' }));
-	app.use(express.session());
+	app.use(express.cookieParser( config.session_secret ));
+	app.use(express.session({
+		secret: config.session_secret,
+		cookie: {
+			path: '/',
+			httpOnly: true,
+			maxAge: null
+		}
+	}));
+
 	app.use(app.router);
 	app.use(express.static(path.join(__dirname, 'public' )));
 });
 
 app.configure( 'development', function() {
-  app.use( express.errorHandler() );
+	app.use( express.errorHandler() );
 });
 
 var Silencer = {

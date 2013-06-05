@@ -24,6 +24,7 @@ Heroku Environment Variables
 * `consumerKey = ''`
 * `consumerSecret = ''`
 * `NODEFLY_ID = ''`
+* `SESSION_SECRET = ''` (optional)
 
 # Sources
 

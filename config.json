@@ -4,5 +4,6 @@
 	"developmentDomain": "http://localhost",
 	"login": "/twitter/sessions/connect",
 	"logout": "/twitter/sessions/logout",
-	"loginCallback": "/twitter/sessions/callback"
+	"loginCallback": "/twitter/sessions/callback",
+	"developmentSessionSecret": "rhino_spidermonkey_bowling_chimpanzee"
 }
