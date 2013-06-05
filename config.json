@@ -1,6 +1,6 @@
 {
 	"defaultPort": 3000,
-	"productionDomain": "http://twitter-silencer.herokuapp.com",
+	"productionDomain": "http://www.busyness.io",
 	"developmentDomain": "http://localhost",
 	"login": "/twitter/sessions/connect",
 	"logout": "/twitter/sessions/logout",
