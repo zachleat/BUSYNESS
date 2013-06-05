@@ -54,9 +54,9 @@ app.configure(function(){
 	app.use(express.logger( 'dev' ));
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
-	app.use(express.cookieParser( config.session_secret ));
+	app.use(express.cookieParser( SESSION_SECRET ));
 	app.use(express.session({
-		secret: config.session_secret,
+		secret: SESSION_SECRET,
 		cookie: {
 			path: '/',
 			httpOnly: true,
