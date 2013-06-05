@@ -70,8 +70,16 @@ a:hover, a:focus {
 .about {
   text-align: center;
   margin: 0 auto;
-  max-width: 25em;
+  max-width: 27em;
   font-size: 1.142857143em;
+}
+
+.about p {
+  margin-bottom: .3em;
+}
+
+.about .author {
+  white-space: nowrap;
 }
 
 /* -----------------------------------------
@@ -600,6 +608,11 @@ img.avatar {
   max-width: 4em;
   margin-right: 1em;
   vertical-align: middle;
+}
+
+img.avatar.author {
+  border-radius: 50%;
+  margin-right: .3em;
 }
 
 h1 img.avatar {
