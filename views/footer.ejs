@@ -1,6 +1,10 @@
 	<footer>
 		<div class="row about">
-			<p>This project is humbly brought to you using the only acceptable use of the term “Brogrammers”, literal brothers <div><a href="http://twitter.com/zachleat" class="author"><img src="images/zachleat.png" alt="zachleat Twitter Avatar" class="author avatar">@zachleat</a> and <a href="http://twitter.com/danleatherman" class="author"><img src="images/danleatherman.png" alt="danleatherman Twitter Avatar" class="author avatar"danleatherman>@danleatherman</a>.</div></p>
+			<p>This project is humbly brought to you using the only acceptable use of the term “Brogrammers”, literal brothers</p>
+			<div><a href="http://twitter.com/zachleat" class="author"><img src="images/zachleat.png" alt="zachleat Twitter Avatar" class="author avatar">@zachleat</a> and <a href="http://twitter.com/danleatherman" class="author"><img src="images/danleatherman.png" alt="danleatherman Twitter Avatar" class="author avatar"danleatherman>@danleatherman</a>.</div>
+<% if( logout ) { %>
+			<p><a href="<%= logout %>">Logout</a></p>
+<% } %>
 		</div>
 	</footer>
 	<script>

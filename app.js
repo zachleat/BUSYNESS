@@ -142,7 +142,8 @@ app.get( '/', function( req, res ) {
 	} else {
 		res.render('index', {
 			title: Silencer.APP_NAME,
-			login: config.login
+			login: config.login,
+			logout: false
 		});
 	}
 });
@@ -260,7 +261,22 @@ app.get( '/:username', function( req, res ) {
 
 app.get( config.login, twitterAuth.oauthConnect );
 app.get( config.loginCallback, twitterAuth.oauthCallback );
-app.get( config.logout, twitterAuth.logout );
+app.get( config.logout, function( req, res ) {
+	res.clearCookie( 'secret', {
+		path: '/',
+		httpOnly: true,
+		maxAge: null
+	});
+	res.clearCookie( 'token', {
+		path: '/',
+		httpOnly: true,
+		maxAge: null
+	});
+	req.session.oauthAccessToken = null;
+	req.session.oauthAccessTokenSecret = null;
+	req.session.destroy();
+	res.redirect( '/' );
+} );
 
 http.createServer( app ).listen( app.get( 'port' ), function(){
 	console.log( 'Express server listening on port ' + app.get( 'port' ) );
