@@ -115,8 +115,10 @@ a {
 	text-align: center;
 	padding-bottom: 1em;
 }
-.subsignin > p {
+.screenshots {
 	overflow: hidden;
+	max-width: 35em;
+	margin: 0 auto;
 }
 .screenshot {
 	width: 49%;

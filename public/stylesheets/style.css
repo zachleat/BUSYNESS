@@ -110,8 +110,10 @@ a:hover, a:focus {
   padding-bottom: 1em;
 }
 
-.subsignin > p {
+.screenshots {
   overflow: hidden;
+  max-width: 35em;
+  margin: 0 auto;
 }
 
 .screenshot {
