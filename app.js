@@ -187,6 +187,9 @@ app.get( '/:username', function( req, res ) {
 		res.cookie( 'username', username, cookieOptions );
 	}
 
+	var maxAge = 60*60; // 1 hour
+	res.setHeader('Cache-Control', 'public, max-age=' + maxAge);
+
 	function errorCallback( error ) {
 		console.log( 'Error callback: ', error );
 		res.render('error', {
