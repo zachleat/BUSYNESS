@@ -13,6 +13,10 @@
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+img {
+  max-width: 100%;
+}
+
 body {
   background: #fff;
   font: 0.875em/1.2 "news-gothic-std", "Helvetica Neue", sans-serif;
@@ -98,11 +102,25 @@ a:hover, a:focus {
 
 .subsignin {
   max-width: 35em;
-  margin: 5em auto 0;
+  margin: 3em auto 0;
 }
 
 .subsignin h2 {
   text-align: center;
+  padding-bottom: 1em;
+}
+
+.subsignin > p {
+  overflow: hidden;
+}
+
+.screenshot {
+  width: 49%;
+  float: right;
+}
+
+.screenshot:first-child {
+  float: left;
 }
 
 /* -----------------------------------------
