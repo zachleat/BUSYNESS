@@ -65,15 +65,6 @@ app.configure(function(){
 		store: new MemcachedStore({}, MemcachedInstance)
 	}));
 
-	// app.use(express.session({
-	// 	secret: SESSION_SECRET,
-	// 	cookie: {
-	// 		path: '/',
-	// 		httpOnly: true,
-	// 		maxAge: null
-	// 	}
-	// }));
-
 	app.use(app.router);
 	app.use(express.static(path.join(__dirname, 'public' )));
 });
