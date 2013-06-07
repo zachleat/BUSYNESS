@@ -16,11 +16,14 @@ var express = require( 'express' ),
 	config = require( './config.json' ),
 	Rsvp = require( './lib/rsvp' ),
 	humanize = require('humanize-number'),
+	MemcachedStore,
 	SESSION_SECRET = process.env.SESSION_SECRET || config.developmentSessionSecret;
 
 config.port = process.env.PORT || config.defaultPort;
 
 if( IS_PRODUCTION ) {
+	MemcachedStore = require( './lib/connect-memcached' )( express );
+
 	if( process.env.PORT ) {
 		config.domain = config.productionDomain;
 	} else {
@@ -55,14 +58,24 @@ app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.methodOverride());
 	app.use(express.cookieParser( SESSION_SECRET ));
-	app.use(express.session({
-		secret: SESSION_SECRET,
-		cookie: {
-			path: '/',
-			httpOnly: true,
-			maxAge: null
-		}
-	}));
+	if( IS_PRODUCTION ) {
+		var MemJS = require("memjs").Client.create();
+		app.use(express.session({
+			secret: SESSION_SECRET,
+			store: new MemcachedStore({
+				hosts: process.env.MEMCACHIER_SERVERS
+			}, MemJS)
+		}));
+	} else {
+		app.use(express.session({
+			secret: SESSION_SECRET,
+			cookie: {
+				path: '/',
+				httpOnly: true,
+				maxAge: null
+			}
+		}));
+	}
 
 	app.use(app.router);
 	app.use(express.static(path.join(__dirname, 'public' )));
