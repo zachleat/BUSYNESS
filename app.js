@@ -165,7 +165,7 @@ app.get( '/:username', function( req, res ) {
 
 	token = req.session.oauthAccessToken || req.session.token;
 	secret = req.session.oauthAccessTokenSecret || req.session.secret;
-console.log(username, token, secret);
+console.log(username, JSON.stringify(req.session));
 	if( !token || !secret || !username ) {
 		res.redirect( '/' );
 		return;
