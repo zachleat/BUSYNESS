@@ -161,22 +161,31 @@ function twitterFetchPromise( url, token, secret ) {
 app.get( '/:username', function( req, res ) {
 	var token,
 		secret,
-		username = req.params.username;
+		username = req.params.username,
+		setCookies = false;
 
-	token = req.session.oauthAccessToken || req.session.token;
-	secret = req.session.oauthAccessTokenSecret || req.session.secret;
-console.log(username, JSON.stringify(req.session));
+	if( req.session && req.session.token && req.session.secret ) {
+		token = req.session.token;
+		secret = req.session.secret;
+	} else {
+		token = req.session.oauthAccessToken;
+		secret = req.session.oauthAccessTokenSecret;
+		setCookies = true;
+	}
+
 	if( !token || !secret || !username ) {
 		res.redirect( '/' );
 		return;
 	}
 
-	req.session.username = username;
-	req.session.token = req.session.oauthAccessToken;
-	req.session.secret = req.session.oauthAccessTokenSecret;
+	if( setCookies ) {
+		req.session.username = username;
+		req.session.token = req.session.oauthAccessToken;
+		req.session.secret = req.session.oauthAccessTokenSecret;
 
-	req.session.oauthAccessToken = null;
-	req.session.oauthAccessTokenSecret = null;
+		req.session.oauthAccessToken = null;
+		req.session.oauthAccessTokenSecret = null;
+	}
 
 	var maxAge = 60*60; // 1 hour
 	res.setHeader('Cache-Control', 'public, max-age=' + maxAge);
