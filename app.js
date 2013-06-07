@@ -59,7 +59,12 @@ app.configure(function(){
 
 	// Session cookies
 	app.use(function(req, res, next) {
-		req.session = req.signedCookies[ 'BUSYNESS' ] || {};
+		req.session = req.session || {};
+
+		var cookies = req.signedCookies[ 'BUSYNESS' ] || {};
+		for( var j in cookies ) {
+			req.session[ j ] = cookies[ j ];
+		}
 
 		res.on( 'header', function() {
 			// { signed: false, maxAge: 1000*60*60*24*7, httpOnly: true }
