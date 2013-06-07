@@ -126,18 +126,6 @@ var Silencer = {
 			tweetsPerDay: tweetsPerDay,
 			loudness: Silencer.loudnessRating( tweetsPerDay )
 		};
-	},
-	middleware: function( req, res, callback ) {
-		var token = req.session.oauthAccessToken,
-			secret = req.session.oauthAccessTokenSecret,
-			username = req.params.username;
-
-		if( !token || !secret || !username ) {
-			res.redirect( '/' );
-			return;
-		}
-
-		callback( token, secret, username );
 	}
 };
 
@@ -172,7 +160,7 @@ app.get( '/:username', function( req, res ) {
 
 	token = req.session.oauthAccessToken || req.session.token;
 	secret = req.session.oauthAccessTokenSecret || req.session.secret;
-
+console.log(username, token, secret);
 	if( !token || !secret || !username ) {
 		res.redirect( '/' );
 		return;
