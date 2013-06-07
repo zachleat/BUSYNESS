@@ -16,7 +16,7 @@ var express = require( 'express' ),
 	config = require( './config.json' ),
 	Rsvp = require( './lib/rsvp' ),
 	humanize = require('humanize-number'),
-	MemcachedStore = require( './lib/connect-memcached' )( express ),
+	SESSION_COOKIE_NAME = 'BUSYNESS',
 	SESSION_SECRET = process.env.SESSION_SECRET || config.developmentSessionSecret;
 
 config.port = process.env.PORT || config.defaultPort;
@@ -57,13 +57,17 @@ app.configure(function(){
 	app.use(express.methodOverride());
 	app.use(express.cookieParser( SESSION_SECRET ));
 
-	var MemJS = require( 'memjs' ).Client,
-		MemcachedInstance = MemJS.create();
+	// Session cookies
+	app.use(function(req, res, next) {
+		req.session = req.signedCookies[ 'BUSYNESS' ] || {};
 
-	app.use(express.session({
-		secret: SESSION_SECRET,
-		store: new MemcachedStore({}, MemcachedInstance)
-	}));
+		res.on( 'header', function() {
+			// { signed: false, maxAge: 1000*60*60*24*7, httpOnly: true }
+			res.cookie( 'BUSYNESS', req.session, { signed: true, maxAge: 1000*60*60*24*7 } );
+		});
+
+		next();
+	});
 
 	app.use(app.router);
 	app.use(express.static(path.join(__dirname, 'public' )));
@@ -138,8 +142,8 @@ var Silencer = {
 };
 
 app.get( '/', function( req, res ) {
-	if( req.cookies && req.cookies.token && req.cookies.secret && req.cookies.username ) {
-		res.redirect( '/' + req.cookies.username );
+	if( req.session && req.session.token && req.session.secret && req.session.username ) {
+		res.redirect( '/' + req.session.username );
 	} else {
 		res.render('index', {
 			title: Silencer.APP_NAME,
@@ -164,29 +168,22 @@ function twitterFetchPromise( url, token, secret ) {
 app.get( '/:username', function( req, res ) {
 	var token,
 		secret,
-		username = req.params.username,
-		setCookies = false,
-		cookieOptions = { signed: false, maxAge: 1000*60*60*24*7, httpOnly: true };
+		username = req.params.username;
 
-	if( req.cookies && req.cookies.token && req.cookies.secret ) {
-		token = req.cookies.token;
-		secret = req.cookies.secret;
-	} else {
-		token = req.session.oauthAccessToken;
-		secret = req.session.oauthAccessTokenSecret;
-		setCookies = true;
-	}
+	token = req.session.oauthAccessToken || req.session.token;
+	secret = req.session.oauthAccessTokenSecret || req.session.secret;
 
 	if( !token || !secret || !username ) {
 		res.redirect( '/' );
 		return;
 	}
 
-	if( setCookies ) {
-		res.cookie( 'token', token, cookieOptions );
-		res.cookie( 'secret', secret, cookieOptions );
-		res.cookie( 'username', username, cookieOptions );
-	}
+	req.session.username = username;
+	req.session.token = req.session.oauthAccessToken;
+	req.session.secret = req.session.oauthAccessTokenSecret;
+
+	req.session.oauthAccessToken = null;
+	req.session.oauthAccessTokenSecret = null;
 
 	var maxAge = 60*60; // 1 hour
 	res.setHeader('Cache-Control', 'public, max-age=' + maxAge);
@@ -266,19 +263,13 @@ app.get( '/:username', function( req, res ) {
 app.get( config.login, twitterAuth.oauthConnect );
 app.get( config.loginCallback, twitterAuth.oauthCallback );
 app.get( config.logout, function( req, res ) {
-	res.clearCookie( 'secret', {
+	req.session = "";
+
+	res.clearCookie( SESSION_COOKIE_NAME, {
 		path: '/',
 		httpOnly: true,
 		maxAge: null
 	});
-	res.clearCookie( 'token', {
-		path: '/',
-		httpOnly: true,
-		maxAge: null
-	});
-	req.session.oauthAccessToken = null;
-	req.session.oauthAccessTokenSecret = null;
-	req.session.destroy();
 	res.redirect( '/' );
 } );
 
