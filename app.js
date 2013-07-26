@@ -86,14 +86,14 @@ var Silencer = {
 	APP_NAME: 'BUSYNESS',
 	// This value is probably the biggest tweak we can change for server performance
 	MAX_CAP: 600,
-	TRUNCATE_PERCENTAGE_TOP: 0.1,
+	TRUNCATE_PERCENTAGE_TOP: 0.25,
 	TRUNCATE_PERCENTAGE_BOTTOM: 0.05,
-	MIN_TRUNCATE_TOP: 20,
+	MIN_TRUNCATE_TOP: 100,
 	MIN_TRUNCATE_BOTTOM: 10,
-	CUTOFF_AVG_TO_CRAZY: 40,
+	CUTOFF_AVG_TOO_CRAZY: 40,
 	lookupUrl: 'https://api.twitter.com/1.1/users/lookup.json',
 	loudnessRating: function( tweetsPerDay ) {
-		var $cutoff = Silencer.CUTOFF_AVG_TO_CRAZY;
+		var $cutoff = Silencer.CUTOFF_AVG_TOO_CRAZY;
 		if( tweetsPerDay <= $cutoff ) {
 			return Math.round( tweetsPerDay );
 		}
