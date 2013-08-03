@@ -1,3 +1,4 @@
 node_modules/
 twitter_config.json
 .sass-cache/
+public/dist/
