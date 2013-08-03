@@ -88,9 +88,11 @@ var Silencer = {
 	MAX_CAP: 600,
 	TRUNCATE_PERCENTAGE_TOP: 0.25,
 	TRUNCATE_PERCENTAGE_BOTTOM: 0.05,
-	MIN_TRUNCATE_TOP: 100,
+	MIN_TRUNCATE_TOP: 50,
 	MIN_TRUNCATE_BOTTOM: 10,
 	CUTOFF_AVG_TOO_CRAZY: 40,
+	FOLLOWER_IDS_PER_REQUEST: 5000,
+	IGNORE_NETWORK_STRENGTH_IF_FOLLOWING_MORE_THAN: 2500,
 	lookupUrl: 'https://api.twitter.com/1.1/users/lookup.json',
 	loudnessRating: function( tweetsPerDay ) {
 		var $cutoff = Silencer.CUTOFF_AVG_TOO_CRAZY;
@@ -188,7 +190,7 @@ app.get( '/:username', function( req, res ) {
 	}
 
 	var maxAge = 60*60; // 1 hour
-	res.setHeader('Cache-Control', 'public, max-age=' + maxAge);
+	// res.setHeader('Cache-Control', 'public, max-age=' + maxAge);
 
 	function errorCallback( error ) {
 		console.log( 'Error callback: ', error );
@@ -198,19 +200,23 @@ app.get( '/:username', function( req, res ) {
 		});
 	}
 
-	twitterFetchPromise( 'https://api.twitter.com/1.1/friends/ids.json?screen_name=' + username, token, secret ).then(function( data ) {
-		if( !data || !data.ids ) {
-			res.redirect( '/' );
-			return;
-		}
-
-		var ids = data.ids.slice( 0, Silencer.MAX_CAP ),
+	function fetchUserData( friends, followers ) {
+		var ids = friends.slice( 0, Silencer.MAX_CAP ),
 			originUser,
 			users = [],
 			totalTweetsPerDay = 0,
 			mean,
 			median,
-			promises = [];
+			promises = [],
+			followersHash = {},
+			networkStrength = 0,
+			showFollowers = followers.length < Silencer.FOLLOWER_IDS_PER_REQUEST;
+
+		if( showFollowers ) {
+			followers.forEach(function( id ) {
+				followersHash[ id ] = true;
+			});
+		}
 
 		promises.push( twitterFetchPromise( Silencer.lookupUrl + '?screen_name=' + username, token, secret ).then(function( data ) {
 				if( data && data.length ) {
@@ -223,6 +229,12 @@ app.get( '/:username', function( req, res ) {
 					if( lookupData && lookupData.length ) {
 						lookupData.forEach(function( user ) {
 							var converted = Silencer.convertTwitterUser( user );
+							if( showFollowers && followersHash[ user.id ] ) {
+								converted.followBack = true;
+								if( Silencer.IGNORE_NETWORK_STRENGTH_IF_FOLLOWING_MORE_THAN > converted.friends ) {
+									networkStrength += converted.followers;
+								}
+							}
 							totalTweetsPerDay += +converted.tweetsPerDay;
 
 							users.push( converted );
@@ -240,8 +252,13 @@ app.get( '/:username', function( req, res ) {
 			median = users[ Math.floor( users.length / 2 ) ].tweetsPerDay;
 			mean = ( totalTweetsPerDay / users.length ).toFixed( 2 );
 
-			var truncatePercentageTop = Math.floor( users.length * Silencer.TRUNCATE_PERCENTAGE_TOP ),
-				truncatePercentageBottom = Math.floor( users.length * Silencer.TRUNCATE_PERCENTAGE_BOTTOM );
+			var truncateTop = Math.floor( users.length * Silencer.TRUNCATE_PERCENTAGE_TOP ),
+				truncateBottom = Math.floor( users.length * Silencer.TRUNCATE_PERCENTAGE_BOTTOM );
+
+			if( req.query.all === '' || req.query.all ) {
+				truncateTop = users.length;
+				truncateBottom = 0;
+			}
 
 			res.render('user', {
 				title: Silencer.APP_NAME + ' for ' + originUser.username,
@@ -250,16 +267,32 @@ app.get( '/:username', function( req, res ) {
 				total: Math.round( totalTweetsPerDay ),
 				users: users,
 				maxCap: Silencer.MAX_CAP,
-				truncateTopLength: Math.max( truncatePercentageTop, Silencer.MIN_TRUNCATE_TOP ),
-				truncateBottomLength: Math.max( truncatePercentageBottom, Silencer.MIN_TRUNCATE_BOTTOM ),
+				truncateTopLength: Math.max( truncateTop, Silencer.MIN_TRUNCATE_TOP ),
+				truncateBottomLength: Math.max( truncateBottom, Silencer.MIN_TRUNCATE_BOTTOM ),
 				mean: mean,
 				median: median,
 				max: users[ 0 ].tweetsPerDay,
 				ellipsisShown: false,
-				humanize: humanize
+				humanize: humanize,
+				showFollowers: showFollowers,
+				networkStrength: networkStrength
 			});
 		}, errorCallback );
-	}, errorCallback );
+	}
+
+	var promises = [];
+
+	promises.push( twitterFetchPromise( 'https://api.twitter.com/1.1/friends/ids.json?screen_name=' + username, token, secret ) );
+	promises.push( twitterFetchPromise( 'https://api.twitter.com/1.1/followers/ids.json?screen_name=' + username, token, secret ) );
+
+	Rsvp.all( promises ).then(function( data ) {
+		if( !data || data.length < 2 || !data[ 0 ].ids || !data[ 1 ].ids ) {
+			res.redirect( '/' );
+			return;
+		}
+
+		fetchUserData( data[ 0 ].ids, data[ 1 ].ids );
+	}, errorCallback);
 });
 
 app.get( config.login, twitterAuth.oauthConnect );

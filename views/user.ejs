@@ -10,17 +10,23 @@
 	<div class="row">
 		<ul class="headline-stats">
 			<li class="consume"><label>Consumes <%= users.length === maxCap ? ' at least ' : '' %></label><span class="value"><%= humanize( total ) %></span> <span class="description">Tweet<%= total !== 1 ? 's' : '' %> per day from <%= users.length %><%= users.length === maxCap ? ( ' of ' + originUser.friends ) : '' %> friend<%= users.length !== 1 ? 's' : '' %> <%= users.length === maxCap ? ( ' (max limit reached)' ) : '' %></span><p>(about <%= Math.round( total / 24 ) %> per hour)</p></li>
-			<li class="publish"><label>Publishes</label> <span class="value"><%= humanize( originUser.tweetsPerDay ) %></span> <span class="description">Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day</span></li>
+			<li class="publish"><label>Publishes</label> <span class="value"><%= humanize( originUser.tweetsPerDay ) %></span> <span class="description">Tweet<%= originUser.tweetsPerDay !== 1 ? 's' : '' %></strong> per day read by <%= originUser.followers %> follower<%= originUser.followers !== 1 ? 's' : '' %></span></li>
 		</ul>
 		<p>On average, each of <%= originUser.username %>’s friends publish <%= mean %> tweet<%= mean !== 1 ? 's' : '' %> every day. <%= originUser.username %>’s median friend publishes <%= median %> tweet<%= median !== 1 ? 's' : '' %> per day.</p>
+<% if( showFollowers ) { %>
+		<p class="network-size"><%= humanize( networkStrength ) %><!-- Of those people that you follow that follow you back, this is the sum total of their followers. --></p>
+<% } %>
 	</div>
 </div>
 
-	<table>
+	<table class="stickyheaders">
 		<thead>
 			<tr class="loudness loudness-<%= originUser.loudness %>">
 				<th class="rank">#</th>
 				<th>Name</th>
+<% if( showFollowers ) { %>
+				<th class="tertiary">Follows Back</th>
+<% } %>
 				<th class="tertiary"><span class="inline-labels">Friends<br/>Followers</span></th>
 				<th class="secondary">Account Age <span class="subth">(Years)</span></th>
 				<th>Tweets</th>
@@ -31,14 +37,17 @@
 			<% for(var j=0, k=users.length; j<k; j++) { %>
 			<% if(j >= truncateTopLength && j < ( k - truncateBottomLength - 1 ) ) { %>
 			<% if( !ellipsisShown ) { %>
-			<tr class="truncated loudness loudness-<%= originUser.loudness %>"><td colspan="7">
-				…
+			<tr class="truncated loudness loudness-<%= originUser.loudness %>"><td colspan="8">
+				<a href="?all">Show All<span class="ellipsis">…</span></a>
 			</td></tr>
 			<% ellipsisShown = true; } %>
 			<% continue; } %>
-			<tr class="loudness loudness-<%= users[j].loudness %>">
+			<tr class="loudness loudness-<%= users[j].loudness %><%= users[j].followBack ? ' follows' : '' %>">
 				<td class="rank"><%= (j+1) %></td>
 				<td class="screenname"><a href="https://twitter.com/<%= users[j].username %>"><img src="<%= users[j].avatar %>" class="avatar"><span class="secondary"><%= users[j].username %></span></a></td>
+<% if( showFollowers ) { %>
+				<td class="tertiary follows"><span><%= users[j].followBack ? 'follows back' : '' %></span></td>
+<% } %>
 				<td class="tertiary">
 					<div><%= humanize( users[j].friends ) %><label> friend<%= users[j].friends !== 1 ? 's' : '' %></label></div>
 					<div><%= humanize( users[j].followers ) %><label> follower<%= users[j].followers !== 1 ? 's' : '' %></label></div>
