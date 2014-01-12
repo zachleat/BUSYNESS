@@ -1,5 +1,5 @@
-/*! busyness - v0.1.0 - 2013-08-03
-* Copyright (c) 2013 ;  License */
+/*! busyness - v0.1.0 - 2014-01-11
+* Copyright (c) 2014 ;  License */
 /*! Shoestring - v0.1.0 - 2013-08-03
 * http://github.com/filamentgroup/shoestring/
 * Copyright (c) 2013 Scott Jehl, Filament Group, Inc; Licensed MIT & GPLv2 */
@@ -1330,11 +1330,3 @@ if( !window.jQuery ){
 	}
 
 })( this, jQuery );
-// Typekit Async Load
-(function() {
-	var config = {
-		kitId: 'rvy8ksk',
-		scriptTimeout: 3000
-	};
-	var h=document.getElementsByTagName("html")[0];h.className+=" wf-loading";var t=setTimeout(function(){h.className=h.className.replace(/(\s|^)wf-loading(\s|$)/g," ");h.className+=" wf-inactive"},config.scriptTimeout);var tk=document.createElement("script"),d=false;tk.src='//use.typekit.net/'+config.kitId+'.js';tk.type="text/javascript";tk.async="true";tk.onload=tk.onreadystatechange=function(){var a=this.readyState;if(d||a&&a!="complete"&&a!="loaded")return;d=true;clearTimeout(t);try{Typekit.load(config)}catch(b){}};var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(tk,s)
-})();

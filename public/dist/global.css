@@ -50,7 +50,7 @@ img {
 
 body {
   background: #fff;
-  font: 0.875em/1.2 "news-gothic-std", "Helvetica Neue", sans-serif;
+  font: 0.875em/1.2 Helvetica Neue, sans-serif;
   font-weight: 400;
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -769,7 +769,7 @@ td {
 
 .truncated td {
   padding: .5em;
-  font-family: news-gothic-std, Helvetica Neue,sans-serif;
+  font-family: Helvetica Neue, sans-serif;
   font-size: 1.25em;
   text-align: center;
   font-weight: bold;
