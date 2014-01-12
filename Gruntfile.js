@@ -31,8 +31,7 @@ module.exports = function(grunt) {
 					'<%= urls.jsSrc %>lib/shoestring.js',
 					'<%= urls.jsSrc %>lib/connector.js',
 					'<%= urls.jsSrc %>lib/globalenhance.js',
-					'<%= urls.jsSrc %>lib/tables.stickyheaders.js',
-					'<%= urls.jsSrc %>*.js'
+					'<%= urls.jsSrc %>lib/tables.stickyheaders.js'
 				],
 				dest: '<%= urls.distFolder %>initial.js'
 			}

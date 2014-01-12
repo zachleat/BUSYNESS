@@ -1,6 +1,6 @@
 @import 'compass/css3';
 @import 'compass/utilities/general/clearfix';
-$stack: 'news-gothic-std', 'Helvetica Neue', sans-serif;
+$stack: Helvetica Neue, sans-serif;
 $primary: #4099FF;
 $a: #444;
 $ahov: #222;
@@ -337,7 +337,7 @@ td {
 }
 .truncated td {
 	padding: .5em;
-	font-family: news-gothic-std, Helvetica Neue,sans-serif;
+	font-family: $stack;
 	font-size: 1.25em;
 	text-align: center;
 	font-weight: bold;
