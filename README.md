@@ -1,3 +1,9 @@
+*This project is Retired.* This was a project to see a list of your noisiest twitter friends.
+
+* [busyness.io (if it’s still up)](http://busyness.io)
+* [Read the blog post](https://www.zachleat.com/web/busyness/)
+* [Sample output](https://www.zachleat.com/busyness-sample/)
+
 # Development
 
 Install
